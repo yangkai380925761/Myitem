@@ -1,0 +1,16 @@
+.content{width:100%;margin: 0 auto; background: url(/Myitem/images/bg.png) repeat;float: left; }
+.logo{height: 37px;background: url(../images/logo_03.png) no-repeat left center; padding-top: 35px; margin-left: 64px;}
+.left{float: left; width: 378px;height: 582px;background: url(/Myitem/images/left_03.png) no-repeat 0px 0px;margin-left: 100px;}
+.right{float: right;width: 397px;background-color: #fff;margin-left: 120px;border-radius: 5px;margin-top: 65px;}
+.right .form{margin-left: 43px;margin-top: 30px;position: relative;}
+.right h1{background: url(../images/company_03.png) no-repeat;font-size: 24px;color: #666;text-indent: 33px;margin-bottom: 20px;}
+.right ul li{font-size: 16px;color: #666;height: 70px;}
+.right ul li input[type="text"]{height: 41px;border: 1px solid #dedede;width: 258px;font-size: 16.5px;color: #666;text-indent: 10px;float: left;}
+.right ul li input[type="password"]{height: 41px;border: 1px solid #dedede;width: 258px;font-size: 16.5px;color: #666;text-indent: 10px;float: left;}
+.right ul span{background-color: #f4f4f4;width: 55px; height: 43px;border: 1px solid #dedede;border-right: none;display: inline-block;float: left;}
+.right ul li input[type="submit"]{width: 145px;height: 42px;background-color: #ea5404;color: #fff;border: none;font-size: 18px;}
+.right ul li input[type="reset"]{width: 145px;height: 42px;background-color: #ea5404;color: #fff;border: none;font-size: 18px;}
+.text_align{width: 1050px;margin: 0 auto;}
+.right ul li b{position: relative;font-size: 16px;top: 15px;float: left;padding-right: 5px;}
+.right ul li a{line-height: 48px;margin-left: 30px;}
+.container{position: relative;}
