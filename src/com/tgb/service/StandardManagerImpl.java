@@ -36,6 +36,7 @@ public class StandardManagerImpl implements StandardManager{
 	}
 	@Override
 	public void updateStandard(Standard standard) {
+		String hql="update Standard u set u.standardName = ?,u.minweight=?,u.maxweight=? where u.id = ?";
 		iDao.update(standard);
 	}
 	@Override
