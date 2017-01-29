@@ -64,7 +64,6 @@ public class UserController {
 		
 		sess.setAttribute("user", user);
 	    sess.setAttribute("userNameNum", user.getUserName());
-	  
 	   // List<User> userInfo=userManager.findByUserName((String)sess.getAttribute("userNameNum"),conn);
 		List<User> userList=userManager.checkPassAndName(userName,MD5Util.md5(password));
 		

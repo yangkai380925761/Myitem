@@ -17,27 +17,28 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tgb.Myitem.service.impl.IDao;
 import com.tgb.entity.MenuItem;
 import com.tgb.entity.Role;
+import com.tgb.entity.Staff;
 import com.tgb.entity.Standard;
 
 @Service
 @Transactional
-public class StandardManagerImpl implements StandardManager{
+public class StaffManagerImpl implements StaffManager{
 	@Autowired
-	private IDao<Standard> iDao;
+	private IDao<Staff> iDao;
 	@Override
-	public List<Standard> findAllByPage(int page, int rows) {
-		String hql="from Standard";
-		List<Standard> list=iDao.findByPage(hql,page,rows);
+	public List<Staff> findAllByPage(int page, int rows) {
+		String hql="from Staff";
+		List<Staff> list=iDao.findByPage(hql,page,rows);
 		return list;
 	}
 	@Override
 	public Long getCount() {
-		String hql="select count(*) from Standard";
+		String hql="select count(*) from Staff";
 		Long  count=iDao.count(hql);
 		return count;
 	}
 	@Override
-	public void updateStandard(Standard standard) {
+	public void updateStandard(Staff Staff) {
 		/*String hql="update Standard u set u.standardName = ?,u.minweight=?,u.maxweight=? where u.id = ?";
 		Query query=iDao.getSession().createQuery(hql);
 		query.setString(0, standard.getStandardName());
@@ -45,7 +46,7 @@ public class StandardManagerImpl implements StandardManager{
 		query.setDouble(2, standard.getMaxweight());
 		query.setString(3, standard.getId());
 		query.executeUpdate();*/
-		iDao.update(standard);
+		iDao.update(Staff);
 	}
 	@Override
 	public void delStandard(String id) {
@@ -53,24 +54,24 @@ public class StandardManagerImpl implements StandardManager{
 		Query query=iDao.getSession().createQuery(hql);
 		query.setString(0, id);
 		query.executeUpdate();*/
-		Standard standard=new Standard();
-		Class Standard=standard.getClass();
-		iDao.deleteById(Standard, id);
+		Staff staff=new Staff();
+		Class Staff=staff.getClass();
+		iDao.deleteById(Staff, id);
 		
 	}
 	@Override
-	public void addStandard(Standard standard) {
+	public void addStandard(Staff staff) {
 		/*iDao.getSession().save(standard);
 		Transaction tran=iDao.getSession().beginTransaction(); 
 		iDao.getSession().flush();
 		tran.commit();*/
-		iDao.add(standard);
+		iDao.add(staff);
 			
 		
 	}
 	@Override
-	public List<Standard> findAll() {
-		return iDao.findAll("from Standard");
+	public List<Staff> findAll() {
+		return iDao.findAll("from Staff");
 	}
 
 

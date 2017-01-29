@@ -3,6 +3,7 @@ package com.tgb.Myitem.service.impl;
 import java.io.Serializable;
 
 
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Repository;
 
 import com.tgb.entity.MenuItem;
 import com.tgb.entity.Role;
+import com.tgb.entity.Standard;
 import com.tgb.entity.User;
 /**
  * 通过的dao层结构
@@ -39,6 +41,7 @@ import com.tgb.entity.User;
 public class IDao<T>{
 	@Autowired
 	private SessionFactory sessionFactory;
+	
 	
 	public Session getSession() {
 		return sessionFactory.getCurrentSession();
@@ -75,6 +78,9 @@ public class IDao<T>{
 	 */
 	public void update(Object object) {
 		getSession().update(object);
+		Transaction tran=getSession().beginTransaction(); 
+		getSession().flush();
+		tran.commit();
 	}
 	/**
 	 * 带有分页获取数据的方法
@@ -102,15 +108,23 @@ public class IDao<T>{
 			return list.get(0);
 		}
 	}
-	  public void deleteById(Class c, Serializable id)
+	  public void deleteById(Class c, String id)
 	   {
-	       String hql = (new StringBuilder("delete from ")).append(c.getSimpleName()).append(" where ").append(getEntityIdName(c)).append(" = :idValue").toString();
+	       String hql = "delete  "+c.getName()+" s where s.id=?";
 	       Query query = getSession().createQuery(hql);
-	       query.setParameter("idValue", id);
+	       query.setString(0, id);
 	       query.executeUpdate();
 	   }
 
 	private Object getEntityIdName(Class c) {
 		return getSessionFactory().getClassMetadata(c).getIdentifierPropertyName();
+	}
+
+	public void add(Object object) {
+		// TODO Auto-generated method stub
+		getSession().save(object);
+		Transaction tran=getSession().beginTransaction(); 
+		getSession().flush();
+		tran.commit();
 	}
 }

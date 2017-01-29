@@ -5,21 +5,22 @@ import java.util.List;
 import com.sun.org.apache.xml.internal.resolver.helpers.PublicId;
 import com.tgb.entity.MenuItem;
 import com.tgb.entity.Role;
+import com.tgb.entity.Staff;
 import com.tgb.entity.Standard;
 
-public interface StandardManager {
+public interface StaffManager {
 
-	List<Standard> findAllByPage(int page, int rows);
+	List<Staff> findAllByPage(int page, int rows);
 
 	Long getCount();
 
-	public void updateStandard(Standard standard);
+	public void updateStandard(Staff staff);
 
 	public void delStandard(String id);
 
-	 void addStandard(Standard standard);
+	 void addStandard(Staff staff);
 
-	List<Standard> findAll();
+	List<Staff> findAll();
 
 	
 }

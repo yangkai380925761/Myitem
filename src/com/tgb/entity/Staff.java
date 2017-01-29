@@ -21,21 +21,29 @@ public class Staff {
 	@GeneratedValue(generator="system-uuid")
 	@GenericGenerator(name = "system-uuid",strategy="uuid")
 	@Column(length=32)
-	private String id;
+	private String id;//取派员编号
 	public static final String STAFFDID = "id";
 	
+	//取派人姓名
 	@Column(name="staffName",length=32)
 	private String staffName;
 	public static final String STAFFNAME = "staffName";
-	 
+	
+	 //联系电话
 	@Column(name="phone", length=50)
 	private String phone;
-	 
+	
+	//是否有移动设备 
 	@Column(name="haspda",length=20)
 	private String  haspda;
 	
+	//所属单位
 	@Column(name="station")
 	private String station;
+	
+	//取派标准
+	@Column(name="standard")
+	private String standard;
 	
 	@Column(name="createTime")
 	private Timestamp createTime;

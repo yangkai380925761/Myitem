@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="utf-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@page import="com.tgb.entity.Staff"%>
 <%@page import="com.tgb.entity.Standard"%>
 <%
     String path = request.getContextPath();
@@ -10,7 +11,7 @@
 <link href=${pageContext.request.contextPath }/images/LOGO.ico" rel="shortcut icon" type="image/x-icon" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>收派标准</title>
+<title>取派员设置</title>
 <jsp:include page="/resources.jsp"></jsp:include>
 <style type="text/css">
 	#fm {
@@ -159,7 +160,7 @@ var url;
 		$('#dg').datagrid({
 		    height: '100%',
 		    fit:true,
-		    url: '<%=basePath %>standard/getStandardList.action',
+		    url: '<%=basePath %>staff/getStaffList.action',
 		    method: 'POST',
 		    striped: true,  //显示条纹
 		    nowrap: true,	//设置为true，当数据长度超出列宽时将会自动截取。
@@ -175,11 +176,20 @@ var url;
 		    
 		    columns: [[
 		        { field: 'ck', checkbox: true },
-		        { field: 'standardName', title: '标准名称', width: 150},
-		        { field: 'minweight', title: '最小重量', width: 150},
-		        { field: 'maxweight', title: '最大重量', width: 150},
-		        { field: 'createBy', title: '操作人', width: 150},
-		        { field: 'updateTime', title: '更新时间', width: 120,align: 'center',formatter: formatDatebox}
+		        { field: 'id', title: '取派员编号', width: 150},
+		        { field: 'staffName', title: '姓名', width: 150},
+		        { field: 'phone', title: '手机', width: 150},
+		        { field: 'station', title: '所属单位', width: 150},
+		        { field: 'haspda', title: 'pda', width: 150,
+		        	formatter : function(data,row, index){
+					if(data=="1"){
+						return "有";
+					}else{
+						return "无";
+					}
+				}},
+				{ field: 'standard', title: '收派标准', width: 150},
+		        { field: 'createTime', title: '创建时间', width: 120,align: 'center',formatter: formatDatebox}
 		    ]],		
 		   
 		    onDblClickRow :function(rowIndex,rowData){
@@ -205,19 +215,28 @@ var url;
 		buttons="#dlg-buttons">
 		<div class="ftitle" id="ftitle"></div>
 		<form id="fm" method="post"  novalidate>
-			<input id="<%=Standard.STANDARDID %>" name="<%=Standard.STANDARDID %>"  type="hidden">
-			
+				<input id="<%=Staff.STAFFDID %>" name="<%=Staff.STAFFDID %>"  type="hidden">
 			<div class="fitem ">
-				<label>标准名称:</label>
+				<label>取派员姓名:</label>
 				<input name="standardName" id="standardName" class="easyui-validatebox" data-options="required:true,validType:['length[1,10]']"/>
 			</div>
 			<div class="fitem ">
-				<label>最小重量:</label>
-				 <input name="minweight" id="minweight" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
+				<label>取派员电话:</label>
+				 <input name="phone" id="phone" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
 			</div>
 			<div class="fitem">
-				<label>最大重量:</label>
-				 <input name="maxweight" id="maxweight" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
+				<label>是否有移动设备:</label>
+				 <input type="radio" name="haspda" value="0">否</input>
+                 <input type="radio" name="haspda" value="1">是</input>
+			</div>
+			<div class="fitem ">
+				<label>所属单位:</label>
+				 <input name="station" id="station" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
+			</div>
+			<div class="fitem ">
+				<label>收派标准:</label>
+				 <input class="easyui-combobox"  id="standardId" name="<%=Standard.STANDARDID %>" 
+							data-options="url:'<%=basePath%>standard/ajaxList.action',valueField:'id',textField:'name',required:true" />
 			</div>
 		</form> 
 	</div>

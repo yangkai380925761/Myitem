@@ -21,32 +21,34 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.tgb.entity.MenuItem;
 import com.tgb.entity.Role;
+import com.tgb.entity.Staff;
 import com.tgb.entity.Standard;
 import com.tgb.entity.User;
 import com.tgb.service.MenuItemManager;
 import com.tgb.service.RoleManager;
+import com.tgb.service.StaffManager;
 import com.tgb.service.StandardManager;
 import com.tgb.service.UserManager;
 import com.tgb.utils.MD5Util;
 
 @Controller
-@RequestMapping("/standard")
-public class StandardCotroller {
+@RequestMapping("/staff")
+public class StaffCotroller {
 	@Autowired
-	private StandardManager standardManager;
+	private StaffManager staffManager;
 	
-	@RequestMapping("/getStandardList")
+	@RequestMapping("/getStaffList")
 	@ResponseBody
 	@Transactional
-	public Map<String, Object> getStandardList(int page, int rows){
+	public Map<String, Object> getStaffList(int page, int rows){
 		Map<String, Object> map=new HashMap<String, Object>();
-		List<Standard> standardList=standardManager.findAllByPage(page,rows);
-		Long total=standardManager.getCount();
-		map.put("rows", standardList);
+		List<Staff> staffList=staffManager.findAllByPage(page,rows);
+		Long total=staffManager.getCount();
+		map.put("rows", staffList);
 		map.put("total", total);
 		return map;
 	}
-	
+	/*
 	@RequestMapping("/ajaxList")
 	@ResponseBody
 	@Transactional
@@ -56,6 +58,7 @@ public class StandardCotroller {
 		map.put("standardList", standardList);
 		return map;
 	}
+	*/
 	/**
 	 * 修改收派标准的方法
 	 * @param userName
@@ -77,7 +80,7 @@ public class StandardCotroller {
 		standard.setMinweight(minweight);
 		standard.setMaxweight(maxweight);
 		standard.setId(id);
-		standardManager.updateStandard(standard);
+		//staffManager.updateStandard(standard);
 		map.put("success", true);
 		return "";
 	}
@@ -101,7 +104,7 @@ public class StandardCotroller {
 		standard.setMaxweight(maxweight);
 		standard.setCreateTime(new Timestamp(new Date().getTime()));
 		standard.setCreateBy((String)session.getAttribute("userNameNum"));
-		standardManager.addStandard(standard);
+		//standardManager.addStandard(standard);
 		map.put("success", true);
 		return "";
 	}
@@ -116,14 +119,14 @@ public class StandardCotroller {
 	@Transactional
 	public Map<String, Object> delete( String id,HttpSession session){
 		Map<String, Object> map=new HashMap<String, Object>();
-		standardManager.delStandard(id);
+		//standardManager.delStandard(id);
 		map.put("success", true);
 		//map.put("errorMsg", "删除失败");
 		return map;
 	}
 	@RequestMapping("/index")
 	public String index(){
-		return "/jsp/base/standard";
+		return "/jsp/base/staff";
 	}
 	
 }
