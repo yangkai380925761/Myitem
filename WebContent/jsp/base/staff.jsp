@@ -13,6 +13,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>取派员设置</title>
 <jsp:include page="/resources.jsp"></jsp:include>
+
+<link rel="stylesheet" href="${pageContext.request.contextPath }/css/combo.select.css">
+<script src="${pageContext.request.contextPath }/js/jquery.combo.select.js"></script>
+
 <style type="text/css">
 	#fm {
 	margin: 0;
@@ -48,15 +52,25 @@
 .datagrid-htable{font-size:18px; text-align:center; font-weight:bold; height:40px; color:#000;}
 .datagrid-btable{text-align:center;}
 .datagrid-btable tr{height:40px;}
+.dowebok { width: 400px; margin: 100px auto;}
 </style>
 </head>
-<body>
+<body >
 <script type="text/javascript">
 var url;
+var i=0;
 	function add(){
+		
 		 $('#dlg').dialog('open').dialog('setTitle',' ');
+		 if(i==0){
+			 loadData();
+			 i=1;
+		 }
+		 //$(".combo-select").after('<label>收派标准:</label>');
+		
 		 $('#fm').form('clear');
 		 url = '<%=basePath%>standard/add.action';
+		
 		 $('#ftitle').html("添加标准");
 	}
 	function shows(){ //查看
@@ -197,8 +211,26 @@ var url;
 		   	}
 
 		});
-			    
+		  
 	});
+	 function loadData() {
+		
+		    $.ajax({
+		    type : "POST",                                            // 使用post方法访问后台
+		    dataType : "json",                                        // 返回json格式的数据
+		    url: "<%=basePath %>standard/ajaxList.action",                                    // 要访问的后台地址
+		    complete : function() {}, 
+		    success : function(result) {// result为返回的数据
+		    	var list=result.standardList;
+		    	for(var i=0;i<list.length;i++){
+		    		//alert(list[i].standardName);
+		    		$("#standardId").append('<option value="'+i+'">'+list[i].standardName+'</option>');
+		    	}
+		    	$('select').comboSelect();
+		    }
+		    
+		   }); 
+		  } 
 </script>
  
 <div id="dg" style="width:50%;height:250px;"></div>
@@ -212,7 +244,7 @@ var url;
 	</div>
 	<div id="dlg" class="easyui-dialog"
 		style="width: 580px; height: 450px; padding: 10px 20px" closed="true"
-		buttons="#dlg-buttons">
+		buttons="#dlg-buttons" >
 		<div class="ftitle" id="ftitle"></div>
 		<form id="fm" method="post"  novalidate>
 				<input id="<%=Staff.STAFFDID %>" name="<%=Staff.STAFFDID %>"  type="hidden">
@@ -233,11 +265,10 @@ var url;
 				<label>所属单位:</label>
 				 <input name="station" id="station" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
 			</div>
-			<div class="fitem ">
-				<label>收派标准:</label>
-				 <input class="easyui-combobox"  id="standardId" name="<%=Standard.STANDARDID %>" 
-							data-options="url:'<%=basePath%>standard/ajaxList.action',valueField:'id',textField:'name',required:true" />
-			</div>
+			<label>收派标准:</label>
+				 <select   id="standardId" name="standard.id" style="width:160px;"  >
+				 </select>
+			
 		</form> 
 	</div>
 	<div id="dlg-buttons">
