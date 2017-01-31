@@ -142,6 +142,8 @@
 			if(this.settings.extendStyle && this.$el.attr('style')){
 
 				this.$container.attr('style', this.$el.attr("style"))
+				//this.$container.find('select').before('<span>收派标准:</span>');
+				//alert(this.$container.find('select').html());
 				
 			}
 			
@@ -149,7 +151,6 @@
 			/**
 			 * Append dropdown arrow
 			 */
-
 			this.$arrow = $('<div class="'+ this.settings.comboArrowClass+ '" />').appendTo(this.$container)
 			
 

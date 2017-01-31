@@ -190,8 +190,8 @@ var i=0;
 		    
 		    columns: [[
 		        { field: 'ck', checkbox: true },
-		        { field: 'id', title: '取派员编号', width: 150},
-		        { field: 'staffName', title: '姓名', width: 150},
+		        { field: 'id', title: '通知单号', width: 150},
+		        { field: 'user', title: '姓名', width: 150},
 		        { field: 'phone', title: '手机', width: 150},
 		        { field: 'station', title: '所属单位', width: 150},
 		        { field: 'haspda', title: 'pda', width: 150,
@@ -236,10 +236,8 @@ var i=0;
 <div id="dg" style="width:50%;height:250px;"></div>
 	<div id="toolbar">
 		<div id="tb" style="height:auto;">		
-		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cut',plain:true" onclick="destroyBean()">删除</a>
-		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="editBean(this)">修改</a>
-		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="shows()">查看</a>
-		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="add()">新增</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="destroyBean()">新单</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="destroyBean()">工单操作</a>
 	</div>	
 	</div>
 	<div id="dlg" class="easyui-dialog"

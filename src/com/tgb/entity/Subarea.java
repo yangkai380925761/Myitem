@@ -15,7 +15,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name="BC_QUAREA")
-public class fqarea {
+public class Subarea {
 
 	@Id
 	@GeneratedValue(generator="system-uuid")
@@ -23,22 +23,25 @@ public class fqarea {
 	@Column(length=32)
 	private String id;
 	public static final String FQID = "id";
-	
+	//关键字
 	@Column(name="addressName",length=32)
 	private String addressName;
-	public static final String ADDRESSNAME = "addressName";
-	 
+	//起始号
 	@Column(name="startNum", length=50)
 	private String startNum;
-	 
+	//结束号
 	@Column(name="endNum",length=20)
 	private String  endNum;
-	
+	//是否分单双号
 	@Column(name="hasSingle")
 	private String hasSingle;
-	
+	//区分位置信息
 	@Column(name="position")
 	private String position;
+	
+	//关联区域
+	@Column(name="region")
+	private String region;
 	
 	@Column(name="createTime")
 	private Timestamp createTime;
@@ -99,6 +102,14 @@ public class fqarea {
 
 	public void setCreateTime(Timestamp createTime) {
 		this.createTime = createTime;
+	}
+
+	public String getRegion() {
+		return region;
+	}
+
+	public void setRegion(String region) {
+		this.region = region;
 	}
 
 	

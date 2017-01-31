@@ -15,7 +15,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name="BC_DQAREA")
-public class dqarea {
+public class Dqarea {
 
 	@Id
 	@GeneratedValue(generator="system-uuid")
@@ -23,16 +23,19 @@ public class dqarea {
 	@Column(length=32)
 	private String id;
 	public static final String STANDARDID = "id";
-	
+	//定区名称
 	@Column(name="dqName",length=32)
 	private String dqName;
 	public static final String DQNAME = "dqName";
-	 
-	
+	//负责人
+	@Column(name="staff")
+	private String staff;
+	//关联分区
+	@Column(name="subarea")
+	private String subarea;
 	
 	@Column(name="createTime")
 	private Timestamp createTime;
-
 
 
 	public String getId() {
@@ -67,6 +70,30 @@ public class dqarea {
 
 	public void setCreateTime(Timestamp createTime) {
 		this.createTime = createTime;
+	}
+
+
+
+	public String getStaff() {
+		return staff;
+	}
+
+
+
+	public void setStaff(String staff) {
+		this.staff = staff;
+	}
+
+
+
+	public String getSubarea() {
+		return subarea;
+	}
+
+
+
+	public void setSubarea(String subarea) {
+		this.subarea = subarea;
 	}
 
 	

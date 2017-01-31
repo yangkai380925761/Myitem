@@ -11,7 +11,7 @@
 <link href=${pageContext.request.contextPath }/images/LOGO.ico" rel="shortcut icon" type="image/x-icon" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>取派员设置</title>
+<title>分区管理</title>
 <jsp:include page="/resources.jsp"></jsp:include>
 
 <link rel="stylesheet" href="${pageContext.request.contextPath }/css/combo.select.css">
@@ -174,7 +174,7 @@ var i=0;
 		$('#dg').datagrid({
 		    height: '100%',
 		    fit:true,
-		    url: '<%=basePath %>staff/getStaffList.action',
+		    url: '<%=basePath %>subarea/getSubareaList.action',
 		    method: 'POST',
 		    striped: true,  //显示条纹
 		    nowrap: true,	//设置为true，当数据长度超出列宽时将会自动截取。
@@ -190,19 +190,21 @@ var i=0;
 		    
 		    columns: [[
 		        { field: 'ck', checkbox: true },
-		        { field: 'id', title: '取派员编号', width: 150},
-		        { field: 'staffName', title: '姓名', width: 150},
-		        { field: 'phone', title: '手机', width: 150},
-		        { field: 'station', title: '所属单位', width: 150},
-		        { field: 'haspda', title: 'pda', width: 150,
+		        { field: 'id', title: '分拣编号', width: 150},
+		        { field: 'addressName', title: '关键字', width: 150},
+		        { field: 'startNum', title: '起始号', width: 150},
+		        { field: 'endNum', title: '结束号', width: 150},
+		        { field: 'hasSingle', title: '单双号', width: 150,
 		        	formatter : function(data,row, index){
-					if(data=="1"){
-						return "有";
+					if(data=="2"){
+						return "单双号";
+					}else if(data=="1"){
+						return "单号";
 					}else{
-						return "无";
+						return "双号";
 					}
 				}},
-				{ field: 'standard', title: '收派标准', width: 150},
+				{ field: 'position', title: '位置', width: 150},
 		        { field: 'createTime', title: '创建时间', width: 120,align: 'center',formatter: formatDatebox}
 		    ]],		
 		   
@@ -240,6 +242,8 @@ var i=0;
 		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="editBean(this)">修改</a>
 		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="shows()">查看</a>
 		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="add()">新增</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-redo',plain:true" onclick="add()">导入</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="add()">导出</a>
 	</div>	
 	</div>
 	<div id="dlg" class="easyui-dialog"
@@ -257,7 +261,7 @@ var i=0;
 				 <input name="phone" id="phone" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
 			</div>
 			<div class="fitem">
-				<label>移动设备:</label>
+				<label>是否有移动设备:</label>
 				 <input type="radio" name="haspda" value="0">否</input>
                  <input type="radio" name="haspda" value="1">是</input>
 			</div>
@@ -265,9 +269,8 @@ var i=0;
 				<label>所属单位:</label>
 				 <input name="station" id="station" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
 			</div>
-				<span>收派标准:</span>
+			<label>收派标准:</label>
 				 <select   id="standardId" name="standard.id" style="width:160px;"  >
-						
 				 </select>
 			
 		</form> 

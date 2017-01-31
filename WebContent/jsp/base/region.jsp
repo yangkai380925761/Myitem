@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="utf-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<%@page import="com.tgb.entity.Staff"%>
-<%@page import="com.tgb.entity.Standard"%>
+<%@page import="com.tgb.entity.Region"%>
 <%
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
@@ -11,12 +10,8 @@
 <link href=${pageContext.request.contextPath }/images/LOGO.ico" rel="shortcut icon" type="image/x-icon" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>取派员设置</title>
+<title>收派标准</title>
 <jsp:include page="/resources.jsp"></jsp:include>
-
-<link rel="stylesheet" href="${pageContext.request.contextPath }/css/combo.select.css">
-<script src="${pageContext.request.contextPath }/js/jquery.combo.select.js"></script>
-
 <style type="text/css">
 	#fm {
 	margin: 0;
@@ -52,25 +47,15 @@
 .datagrid-htable{font-size:18px; text-align:center; font-weight:bold; height:40px; color:#000;}
 .datagrid-btable{text-align:center;}
 .datagrid-btable tr{height:40px;}
-.dowebok { width: 400px; margin: 100px auto;}
 </style>
 </head>
-<body >
+<body>
 <script type="text/javascript">
 var url;
-var i=0;
 	function add(){
-		
 		 $('#dlg').dialog('open').dialog('setTitle',' ');
-		 if(i==0){
-			 loadData();
-			 i=1;
-		 }
-		 //$(".combo-select").after('<label>收派标准:</label>');
-		
 		 $('#fm').form('clear');
 		 url = '<%=basePath%>standard/add.action';
-		
 		 $('#ftitle').html("添加标准");
 	}
 	function shows(){ //查看
@@ -174,7 +159,7 @@ var i=0;
 		$('#dg').datagrid({
 		    height: '100%',
 		    fit:true,
-		    url: '<%=basePath %>staff/getStaffList.action',
+		    url: '<%=basePath %>region/getRegionList.action',
 		    method: 'POST',
 		    striped: true,  //显示条纹
 		    nowrap: true,	//设置为true，当数据长度超出列宽时将会自动截取。
@@ -190,19 +175,13 @@ var i=0;
 		    
 		    columns: [[
 		        { field: 'ck', checkbox: true },
-		        { field: 'id', title: '取派员编号', width: 150},
-		        { field: 'staffName', title: '姓名', width: 150},
-		        { field: 'phone', title: '手机', width: 150},
-		        { field: 'station', title: '所属单位', width: 150},
-		        { field: 'haspda', title: 'pda', width: 150,
-		        	formatter : function(data,row, index){
-					if(data=="1"){
-						return "有";
-					}else{
-						return "无";
-					}
-				}},
-				{ field: 'standard', title: '收派标准', width: 150},
+		        { field: 'province', title: '省', width: 150},
+		        { field: 'city', title: '市', width: 150},
+		        { field: 'district', title: '区', width: 150},
+		        { field: 'postcode', title: '邮编', width: 150},
+		        { field: 'shortcode', title: '简码', width: 150},
+		        { field: 'citycode', title: '城市编码', width: 150},
+		        { field: 'createBy', title: '操作人', width: 150},
 		        { field: 'createTime', title: '创建时间', width: 120,align: 'center',formatter: formatDatebox}
 		    ]],		
 		   
@@ -211,26 +190,8 @@ var i=0;
 		   	}
 
 		});
-		  
+			    
 	});
-	 function loadData() {
-		
-		    $.ajax({
-		    type : "POST",                                            // 使用post方法访问后台
-		    dataType : "json",                                        // 返回json格式的数据
-		    url: "<%=basePath %>standard/ajaxList.action",                                    // 要访问的后台地址
-		    complete : function() {}, 
-		    success : function(result) {// result为返回的数据
-		    	var list=result.standardList;
-		    	for(var i=0;i<list.length;i++){
-		    		//alert(list[i].standardName);
-		    		$("#standardId").append('<option value="'+i+'">'+list[i].standardName+'</option>');
-		    	}
-		    	$('select').comboSelect();
-		    }
-		    
-		   }); 
-		  } 
 </script>
  
 <div id="dg" style="width:50%;height:250px;"></div>
@@ -240,35 +201,40 @@ var i=0;
 		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="editBean(this)">修改</a>
 		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="shows()">查看</a>
 		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="add()">新增</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="toImportExcel()">导入</a>
 	</div>	
 	</div>
 	<div id="dlg" class="easyui-dialog"
 		style="width: 580px; height: 450px; padding: 10px 20px" closed="true"
-		buttons="#dlg-buttons" >
+		buttons="#dlg-buttons">
 		<div class="ftitle" id="ftitle"></div>
 		<form id="fm" method="post"  novalidate>
-				<input id="<%=Staff.STAFFDID %>" name="<%=Staff.STAFFDID %>"  type="hidden">
+			<input id="<%=Region.REGIONID %>" name="<%=Region.REGIONID %>"  type="hidden">
+			
 			<div class="fitem ">
-				<label>取派员姓名:</label>
-				<input name="standardName" id="standardName" class="easyui-validatebox" data-options="required:true,validType:['length[1,10]']"/>
+				<label>省:</label>
+				<input name="province" id="province" class="easyui-validatebox" data-options="required:true,validType:['length[1,10]']"/>
 			</div>
 			<div class="fitem ">
-				<label>取派员电话:</label>
-				 <input name="phone" id="phone" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
+				<label>市:</label>
+				 <input name="city" id="city" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
 			</div>
 			<div class="fitem">
-				<label>移动设备:</label>
-				 <input type="radio" name="haspda" value="0">否</input>
-                 <input type="radio" name="haspda" value="1">是</input>
+				<label>区:</label>
+				 <input name="district" id="district" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
 			</div>
-			<div class="fitem ">
-				<label>所属单位:</label>
-				 <input name="station" id="station" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
+			<div class="fitem">
+				<label>邮编:</label>
+				 <input name="postcode" id="postcode" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
 			</div>
-				<span>收派标准:</span>
-				 <select   id="standardId" name="standard.id" style="width:160px;"  >
-						
-				 </select>
+			<div class="fitem">
+				<label>简码:</label>
+				 <input name="shortcode" id="shortcode" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
+			</div>
+			<div class="fitem">
+				<label>城市编码:</label>
+				 <input name="citycode" id="citycode" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
+			</div>
 			
 		</form> 
 	</div>
