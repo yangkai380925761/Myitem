@@ -25,13 +25,110 @@
 				}
 			};
 		
+		
+		var quanxianNum;
 		// 基本功能菜单加载
 		$.ajax({
 			url : '${pageContext.request.contextPath}/json/menu.json',
 			dataType : 'text',
 			success : function(data) {
+				//console.log(data);
 				var zNodes = eval("(" + data + ")");
-				$.fn.zTree.init($("#treeMenu"), setting, zNodes);
+				console.log(zNodes);
+				console.log(zNodes[0]);
+				
+				 $.ajax({
+					 url : '${pageContext.request.contextPath}/user/getCurrentUser.action',
+					 type:"post",
+					 dataType : 'json',
+					 async:false,
+					 success : function(data) {
+						var userList=data.userInfo;
+						//console.log(data.userList);
+						//console.log(userList[0]);
+						quanxianNum=userList[0].quanxianNum;
+					},
+				 });
+				 var arr=quanxianNum.split(",");
+				 var znode;
+				 var newZnode=[];
+				 var newZnodes=[];
+				 var k=0;//基础数据
+				 var q=0;//业务受理
+				 var w=0;//调度
+				 var e=0;//中转配送
+				 var flag;
+				 for(var i=0;i<arr.length;i++){
+					 var one=arr[i];
+					 if(one.length==3){
+						 znode=one.substring(0,1);
+						 //alert(zNodes[0].pageNum);
+						for(var j=0;j<zNodes.length;j++){
+							if(znode==zNodes[j].pageNum){
+								newZnode[i]=zNodes[j];
+								if(j>=1&&j<=5){
+									k=1;
+								}
+								if(j>=7&&j<=9){
+									q=1;
+								}
+								if(j>=11&&j<=12){
+									w=1;
+								}
+								if(j>=14&&j<=16){
+									e=1;
+								}
+							}
+						}
+					 }else{
+						 znode=one.substring(0,2);
+						 for(var j=0;j<zNodes.length;j++){
+								if(znode==zNodes[j].pageNum){
+									newZnode[i]=zNodes[j];
+									if(j>=1&&j<=5){
+										k=1;
+									}
+									if(j>=7&&j<=9){
+										q=1;
+									}
+									if(j>=11&&j<=12){
+										w=1;
+									}
+									if(j>=14&&j<=16){
+										e=1;
+									}
+								}
+							}
+					 }
+				 }
+				 /* for(var o=0;o<newZnode.length;o++){
+					 object a=newZnode[o];
+					 for(var p=o+1;p<newZnode.length;p++){
+						 if(a==newZnode[p]){
+							 
+						 }
+					 }
+				 } */
+				 console.log("原来的：");
+				 console.log(newZnode);
+				 newZnodes=newZnode.unique3();
+				 console.log("去重后的：");
+				 console.log(newZnodes);
+				 flag=newZnodes.length;
+				 if(k==1){
+					 newZnodes[flag++]=zNodes[0];
+				 }
+				 if(q==1){
+					 newZnodes[flag++]=zNodes[6];
+				 }
+				 if(w==1){
+					 newZnodes[flag++]=zNodes[10];
+				 }
+				 if(e==1){
+					 newZnodes[flag++]=zNodes[13];
+				 }
+				console.log("新的树"+newZnode);
+				$.fn.zTree.init($("#treeMenu"), setting, newZnodes);
 			},
 			error : function(msg) {
 				alert('菜单加载异常!');
@@ -134,6 +231,17 @@
 		
 		
 	})
+	
+	Array.prototype.unique3 = function(){
+		var n = [this[0]]; //结果数组
+		 for(var i = 1; i < this.length; i++) //从第二项开始遍历
+		 {
+		 //如果当前数组的第i项在当前数组中第一次出现的位置不是i，
+		 //那么表示第i项是重复的，忽略掉。否则存入结果数组
+		 if (this.indexOf(this[i]) == i) n.push(this[i]);
+		 }
+		 return n;
+}
 </script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <jsp:include page="/resources.jsp"></jsp:include>

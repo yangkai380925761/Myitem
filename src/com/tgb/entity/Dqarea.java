@@ -22,11 +22,14 @@ public class Dqarea {
 	@GenericGenerator(name = "system-uuid",strategy="uuid")
 	@Column(length=32)
 	private String id;
-	public static final String STANDARDID = "id";
+	public static final String DQAREAID = "id";
 	//定区名称
 	@Column(name="dqName",length=32)
 	private String dqName;
 	public static final String DQNAME = "dqName";
+	//负责人
+	@Column(name="did")
+	private String did;
 	//负责人
 	@Column(name="staff")
 	private String staff;
@@ -94,6 +97,18 @@ public class Dqarea {
 
 	public void setSubarea(String subarea) {
 		this.subarea = subarea;
+	}
+
+
+
+	public String getDid() {
+		return did;
+	}
+
+
+
+	public void setDid(String did) {
+		this.did = did;
 	}
 
 	

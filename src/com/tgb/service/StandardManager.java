@@ -21,5 +21,11 @@ public interface StandardManager {
 
 	List<Standard> findAll();
 
+	List<Standard> queryByPage(int page, int rows, String standardName,
+			String minweight, String maxweight, String createBy,
+			String qStarttime, String qEndtime);
+
+	Long queryCount(String standardName, String minweight, String maxweight, String createBy, String qStarttime, String qEndtime);
+
 	
 }

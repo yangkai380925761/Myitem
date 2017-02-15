@@ -5,6 +5,7 @@ import java.awt.Menu;
 
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tgb.Myitem.service.impl.IDao;
 import com.tgb.entity.Dqarea;
 import com.tgb.entity.MenuItem;
+import com.tgb.entity.Region;
 import com.tgb.entity.Role;
 import com.tgb.entity.Staff;
 import com.tgb.entity.Standard;
@@ -39,7 +41,7 @@ public class DqareaManagerImpl implements DqareaManager{
 		return count;
 	}
 	@Override
-	public void updateStandard(Staff Staff) {
+	public void updateDqarea(Dqarea dqarea) {
 		/*String hql="update Standard u set u.standardName = ?,u.minweight=?,u.maxweight=? where u.id = ?";
 		Query query=iDao.getSession().createQuery(hql);
 		query.setString(0, standard.getStandardName());
@@ -47,26 +49,26 @@ public class DqareaManagerImpl implements DqareaManager{
 		query.setDouble(2, standard.getMaxweight());
 		query.setString(3, standard.getId());
 		query.executeUpdate();*/
-		iDao.update(Staff);
+		iDao.update(dqarea);
 	}
 	@Override
-	public void delStandard(String id) {
+	public void delDqarea(String id) {
 		/*String hql="delete  Standard s where s.id=?";
 		Query query=iDao.getSession().createQuery(hql);
 		query.setString(0, id);
 		query.executeUpdate();*/
-		Staff staff=new Staff();
-		Class Staff=staff.getClass();
-		iDao.deleteById(Staff, id);
+		Dqarea dqarea=new Dqarea();
+		Class Dqarea=dqarea.getClass();
+		iDao.deleteById(Dqarea, id);
 		
 	}
 	@Override
-	public void addStandard(Staff staff) {
+	public void addDqarea(Dqarea dqarea) {
 		/*iDao.getSession().save(standard);
 		Transaction tran=iDao.getSession().beginTransaction(); 
 		iDao.getSession().flush();
 		tran.commit();*/
-		iDao.add(staff);
+		iDao.add(dqarea);
 			
 		
 	}
@@ -74,6 +76,58 @@ public class DqareaManagerImpl implements DqareaManager{
 	public List<Staff> findAll() {
 		return iDao.findAll("from Staff");
 	}
+	@Override
+	public List<Dqarea> queryByPage(int page, int rows, String dqName,
+			String did, String qStarttime, String qEndtime) {
+		String sql="FROM Dqarea WHERE 1=1";
+		
+		if(dqName!=null&&!dqName.equals("")&&!dqName.equals(" ")){
+			sql += " and dqName like '%" + dqName + "%'";
+		}
+		if(did!=null&&!did.equals("")&&!did.equals(" ")){
+			sql +=" and did like '%" + did + "%'";
+		}
+	    if (qStarttime != null && qStarttime != "") {
+	    	StringBuffer sb=new StringBuffer(qStarttime);
+	    	String st=sb.append(" 00:00:00").toString();
+			Timestamp starttime = Timestamp.valueOf(st);
+			sql += " and createTime >= '" + starttime + "'";
+		}
+		if (qEndtime != null && qEndtime != "") {
+			StringBuffer sb=new StringBuffer(qEndtime);
+	    	String end=sb.append(" 00:00:00").toString();
+			Timestamp endtime = Timestamp.valueOf(end);
+			sql += " and createTime <= '" + endtime + "'";
+		} 
+		List<Dqarea> list=iDao.queryByPage(page,rows,sql);
+		return list;
+	}
+	@Override
+	public Long queryCount(String dqName, String did, String qStarttime,
+			String qEndtime) {
+		String sql="FROM Dqarea WHERE 1=1";
+		
+		if(dqName!=null&&!dqName.equals("")&&!dqName.equals(" ")){
+			sql += " and dqName like '%" + dqName + "%'";
+		}
+		if(did!=null&&!did.equals("")&&!did.equals(" ")){
+			sql +=" and did like '%" + did + "%'";
+		}
+	    if (qStarttime != null && qStarttime != "") {
+	    	StringBuffer sb=new StringBuffer(qStarttime);
+	    	String st=sb.append(" 00:00:00").toString();
+			Timestamp starttime = Timestamp.valueOf(st);
+			sql += " and createTime >= '" + starttime + "'";
+		}
+		if (qEndtime != null && qEndtime != "") {
+			StringBuffer sb=new StringBuffer(qEndtime);
+	    	String end=sb.append(" 00:00:00").toString();
+			Timestamp endtime = Timestamp.valueOf(end);
+			sql += " and createTime <= '" + endtime + "'";
+		} 
+		return iDao.count(Dqarea.class,sql);
+	}
+	
 
 
 	

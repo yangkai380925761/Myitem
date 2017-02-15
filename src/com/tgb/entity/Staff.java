@@ -45,6 +45,10 @@ public class Staff {
 	@Column(name="standard")
 	private String standard;
 	
+	//取派标准的value
+	@Column(name="sID")
+	private String sID;
+		
 	@Column(name="createTime")
 	private Timestamp createTime;
 
@@ -94,6 +98,22 @@ public class Staff {
 
 	public void setCreateTime(Timestamp createTime) {
 		this.createTime = createTime;
+	}
+
+	public String getStandard() {
+		return standard;
+	}
+
+	public void setStandard(String standard) {
+		this.standard = standard;
+	}
+
+	public String getsID() {
+		return sID;
+	}
+
+	public void setsID(String sID) {
+		this.sID = sID;
 	}
 
 	

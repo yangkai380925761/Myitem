@@ -23,24 +23,24 @@ public class Function {
 	@Column(length=32)
 	private String id;
 	public static final String FUNTIONID = "id";
-	
+	//权限名称
 	@Column(name="functionName",length=32)
 	private String functionName;
-	 
+	//	 描述
 	@Column(name="description", length=50)
 	private String description;
-	 
+	 //是否生成菜单（1：生成菜单 0：不生成菜单）
 	@Column(name="generateMenu",length=20)
-	private double  generateMenu;
-	
+	private String  generateMenu;
+	//优先级
 	@Column(name="zindex",length=20)
-	private double zindex;
-	
+	private String zindex;
+	//路径
 	@Column(name="page",length=20)
-	private double page;
-	
+	private String page;
+	//父功能
 	@Column(name="parentFunction",length=20)
-	private double parentFunction;
+	private String parentFunction;
 	
 	@Column(name="CreateTime")
 	private Timestamp createTime;
@@ -69,35 +69,35 @@ public class Function {
 		this.description = description;
 	}
 
-	public double getGenerateMenu() {
+	public String getGenerateMenu() {
 		return generateMenu;
 	}
 
-	public void setGenerateMenu(double generateMenu) {
+	public void setGenerateMenu(String generateMenu) {
 		this.generateMenu = generateMenu;
 	}
 
-	public double getZindex() {
+	public String getZindex() {
 		return zindex;
 	}
 
-	public void setZindex(double zindex) {
+	public void setZindex(String zindex) {
 		this.zindex = zindex;
 	}
 
-	public double getPage() {
+	public String getPage() {
 		return page;
 	}
 
-	public void setPage(double page) {
+	public void setPage(String page) {
 		this.page = page;
 	}
 
-	public double getParentFunction() {
+	public String getParentFunction() {
 		return parentFunction;
 	}
 
-	public void setParentFunction(double parentFunction) {
+	public void setParentFunction(String parentFunction) {
 		this.parentFunction = parentFunction;
 	}
 
@@ -108,7 +108,8 @@ public class Function {
 	public void setCreateTime(Timestamp createTime) {
 		this.createTime = createTime;
 	}
-	
+
+
 	
 
 	

@@ -30,7 +30,6 @@ public class Role {
 	 
 	@Column(name="description",length=50)
 	private String description;
-	public static final String DESCRIPTION = "description";
 
 	@Column(name="CreateBy", length=50, updatable=false)
 	private String createBy;

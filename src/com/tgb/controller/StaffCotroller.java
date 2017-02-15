@@ -1,6 +1,9 @@
 package com.tgb.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 
@@ -48,17 +51,16 @@ public class StaffCotroller {
 		map.put("total", total);
 		return map;
 	}
-	/*
+	
 	@RequestMapping("/ajaxList")
 	@ResponseBody
 	@Transactional
 	public Map<String, Object> ajaxList(){
 		Map<String, Object> map=new HashMap<String, Object>();
-		List<Standard> standardList=standardManager.findAll();
-		map.put("standardList", standardList);
+		List<Staff> staffList=staffManager.findAll();
+		map.put("staffList", staffList);
 		return map;
 	}
-	*/
 	/**
 	 * 修改收派标准的方法
 	 * @param userName
@@ -73,14 +75,17 @@ public class StaffCotroller {
 	@RequestMapping("/update")
 	@ResponseBody
 	@Transactional
-	public String update( String standardName, double minweight,double maxweight,String id,HttpSession session){
+	public String update( String id,String createTime,String staffName,String phone,String haspda,String station,String standard,String sID,HttpSession session){
 		Map<String, Object> map=new HashMap<String, Object>();
-		Standard standard=new Standard();
-		standard.setStandardName(standardName);
-		standard.setMinweight(minweight);
-		standard.setMaxweight(maxweight);
-		standard.setId(id);
-		//staffManager.updateStandard(standard);
+		Staff staff=new Staff();
+		staff.setStaffName(staffName);
+		staff.setStation(station);
+		staff.setPhone(phone);
+		staff.setHaspda(haspda);
+		staff.setStandard(standard);
+		staff.setsID(sID);
+		staff.setId(id);
+		staffManager.updateStaff(staff);
 		map.put("success", true);
 		return "";
 	}
@@ -96,15 +101,17 @@ public class StaffCotroller {
 	@RequestMapping("/add")
 	@ResponseBody
 	@Transactional
-	public String add( String standardName, double minweight,double maxweight,HttpSession session){
+	public String add( String staffName,String phone,String haspda,String station,String standard,String sID,HttpSession session){
 		Map<String, Object> map=new HashMap<String, Object>();
-		Standard standard=new Standard();
-		standard.setStandardName(standardName);
-		standard.setMinweight(minweight);
-		standard.setMaxweight(maxweight);
-		standard.setCreateTime(new Timestamp(new Date().getTime()));
-		standard.setCreateBy((String)session.getAttribute("userNameNum"));
-		//standardManager.addStandard(standard);
+		Staff staff=new Staff();
+		staff.setStaffName(staffName);
+		staff.setStation(station);
+		staff.setPhone(phone);
+		staff.setHaspda(haspda);
+		staff.setStandard(standard);
+		staff.setsID(sID);
+		staff.setCreateTime(new Timestamp(new Date().getTime()));
+		staffManager.addStaff(staff);
 		map.put("success", true);
 		return "";
 	}
@@ -119,11 +126,53 @@ public class StaffCotroller {
 	@Transactional
 	public Map<String, Object> delete( String id,HttpSession session){
 		Map<String, Object> map=new HashMap<String, Object>();
-		//standardManager.delStandard(id);
+		staffManager.delStaff(id);
 		map.put("success", true);
 		//map.put("errorMsg", "删除失败");
 		return map;
 	}
+	/**
+	 * 查找信息的方法
+	 * @param id 用户的id 
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/findInfoByName")
+	@ResponseBody
+	@Transactional
+	public Map<String, Object> findInfoByName( String name,HttpSession session){
+		Map<String, Object> map=new HashMap<String, Object>();
+		List<Staff> staff=staffManager.findInfoByName(name);
+		map.put("staff", staff);
+		return map;
+	}
+	
+	/**
+	 * 查询
+	 * @param page
+	 * @param rows
+	 * @return
+	 */
+	@RequestMapping("/queryStaffList")
+	@ResponseBody
+	@Transactional
+	public Map<String, Object> queryStaffList(int page, int rows,String staffName,String phone,String station,String haspda,String standard,String qStarttime,String qEndtime){
+		Map<String, Object> map=new HashMap<String, Object>();
+		try {
+			staffName = new String(staffName.getBytes("iso8859-1"),"utf-8");
+			station = new String(station.getBytes("iso8859-1"),"utf-8");
+			standard = new String(standard.getBytes("iso8859-1"),"utf-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		List<Staff> staffList=staffManager.queryByPage(page,rows,staffName,phone,station,haspda,standard,qStarttime,qEndtime);
+		Long total=staffManager.queryCount(staffName,phone,station,haspda,standard,qStarttime,qEndtime);
+		map.put("rows", staffList);
+		map.put("total", total);
+		return map;
+	}
+	
 	@RequestMapping("/index")
 	public String index(){
 		return "/jsp/base/staff";

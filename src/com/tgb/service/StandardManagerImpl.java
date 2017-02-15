@@ -5,6 +5,7 @@ import java.awt.Menu;
 
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.eclipse.jdt.internal.compiler.lookup.ClassScope;
@@ -71,6 +72,72 @@ public class StandardManagerImpl implements StandardManager{
 	@Override
 	public List<Standard> findAll() {
 		return iDao.findAll("from Standard");
+	}
+	@Override
+	public List<Standard> queryByPage(int page, int rows, String standardName,
+			String minweight, String maxweight, String createBy,
+			String qStarttime, String qEndtime) {
+		String sql="FROM Standard WHERE 1=1";
+		
+		if(standardName!=null&&!standardName.equals("")&&!standardName.equals(" ")){
+			sql += " and standardName like '%" + standardName + "%'";
+		}
+		if(minweight!=null&&!minweight.equals("")&&!minweight.equals(" ")){
+			sql += " and minweight >= '" + minweight + "'";
+		}
+	    if(maxweight != null && !maxweight.equals("")&& !maxweight.equals(" ")){
+	    	sql += " and maxweight <= '" + maxweight + "'";
+	    }
+	    if(createBy != null && !createBy.equals("")&& !createBy.equals(" ")){
+	    	sql += " and createBy = '" + createBy + "'";
+	    }
+	    if (qStarttime != null && qStarttime != "") {
+	    	StringBuffer sb=new StringBuffer(qStarttime);
+	    	String st=sb.append(" 00:00:00").toString();
+			Timestamp starttime = Timestamp.valueOf(st);
+			sql += " and createTime >= '" + starttime + "'";
+		}
+		if (qEndtime != null && qEndtime != "") {
+			StringBuffer sb=new StringBuffer(qEndtime);
+	    	String end=sb.append(" 00:00:00").toString();
+			Timestamp endtime = Timestamp.valueOf(end);
+			sql += " and createTime <= '" + endtime + "'";
+		} 
+		List<Standard> list=iDao.queryByPage(page,rows,sql);
+		return list;
+	}
+	
+	@Override
+	public Long queryCount(String standardName, String minweight,
+			String maxweight, String createBy, String qStarttime,
+			String qEndtime) {
+		String sql="FROM Standard WHERE 1=1";
+		
+		if(standardName!=null&&!standardName.equals("")&&!standardName.equals(" ")){
+			sql += " and standardName like '%" + standardName + "%'";
+		}
+		if(minweight!=null&&!minweight.equals("")&&!minweight.equals(" ")){
+			sql += " and minweight >= '" + minweight + "'";
+		}
+	    if(maxweight != null && !maxweight.equals("")&& !maxweight.equals(" ")){
+	    	sql += " and maxweight <= '" + maxweight + "'";
+	    }
+	    if(createBy != null && !createBy.equals("")&& !createBy.equals(" ")){
+	    	sql += " and createBy = '" + createBy + "'";
+	    }
+	    if (qStarttime != null && qStarttime != "") {
+	    	StringBuffer sb=new StringBuffer(qStarttime);
+	    	String st=sb.append(" 00:00:00").toString();
+			Timestamp starttime = Timestamp.valueOf(st);
+			sql += " and createTime >= '" + starttime + "'";
+		}
+		if (qEndtime != null && qEndtime != "") {
+			StringBuffer sb=new StringBuffer(qEndtime);
+	    	String end=sb.append(" 00:00:00").toString();
+			Timestamp endtime = Timestamp.valueOf(end);
+			sql += " and createTime <= '" + endtime + "'";
+		} 
+		return iDao.count(Standard.class,sql);
 	}
 
 

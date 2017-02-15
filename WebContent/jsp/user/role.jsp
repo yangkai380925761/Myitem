@@ -51,6 +51,114 @@
 </head>
 <body>
 <script type="text/javascript">
+function add(){
+	 
+	 $('#dlg').dialog('open').dialog('setTitle',' ');
+	
+	 $('#fm').form('clear');
+	 url = '<%=basePath%>role/add.action';
+	
+	 $('#ftitle').html("添加标准");
+}
+function shows(){ //查看
+   var row = $('#dg').datagrid('getSelected');
+   var rows = $('#dg').datagrid('getSelections');
+   if (row == undefined) {
+    		$.messager.alert('操作提示', "没有选择被操作的记录！", 'warning');
+    		return;
+    	 } 
+   if(rows.length>1){
+   	$.messager.alert('操作提示', "请选择一条数据！", 'warning');
+    	return false;
+   }  
+	if (row){
+		editBean(row);
+	}
+}
+var j=0;
+//编辑操作
+function editBean(row){
+	
+   if (row){
+       $('#dlg').dialog('open').dialog('setTitle','');
+       $('#fm').form('load',row);
+       url = '<%=basePath%>role/update.action';    
+       $('#ftitle').html("修改标准信息");
+   }
+}
+
+//修改保存
+function saveBean(){
+	//alert($('#userName').val());
+	 $('#fm').form('submit',{
+	        url: url,
+	        onSubmit: function(){
+	            return $(this).form('validate');
+	        },
+	        success: function(result){
+	            $('#dlg').dialog('close');        // close the dialog
+	            $('#dg').datagrid('reload');    // reload the user data
+	        }
+	 });
+}
+//删除
+function destroyBean(){
+	var rows = $('#dg').datagrid('getChecked');
+   if (rows.length>0){
+       $.messager.confirm('温馨提示','你真的要删除么?',function(r){
+           if (r){
+           	for(var i=0; i<rows.length; i++){
+           		var row=rows[i];
+            $.post('<%=basePath%>role/delete.action',{id:row.id},function(result){
+                   if (result.success){
+                       $('#dg').datagrid('reload');    // reload the user data
+                   } else {
+                       $.messager.show({    // show error message
+                           title: 'Error',
+                           msg: "删除失败"
+                       });
+                   }
+               },'json'); 
+           }
+           }
+       });
+   }
+}
+//-------------格式化日期插件--------------------------
+Date.prototype.format = function (format) {  
+   var o = {  
+       "M+": this.getMonth() + 1, // month  
+       "d+": this.getDate(), // day  
+       "h+": this.getHours(), // hour  
+       "m+": this.getMinutes(), // minute  
+       "s+": this.getSeconds(), // second  
+       "q+": Math.floor((this.getMonth() + 3) / 3), // quarter  
+       "S": this.getMilliseconds()  
+       // millisecond  
+   }  
+   if (/(y+)/.test(format))  
+       format = format.replace(RegExp.$1, (this.getFullYear() + "")  
+           .substr(4 - RegExp.$1.length));  
+   for (var k in o)  
+       if (new RegExp("(" + k + ")").test(format))  
+           format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));  
+   return format;  
+}  
+function formatDatebox(value) {  
+   if (value == null || value == '') {  
+       return '';  
+   }  
+   var dt;  
+   if (value instanceof Date) {  
+       dt = value;  
+   } else {  
+       dt = new Date(value);  
+   }  
+ 
+   return dt.format("yyyy-MM-dd"); //扩展的Date的format方法(上述插件实现)  
+}  
+
+//-----------------------结束------------------------
 	$(function(){
 		$('#dg').datagrid({
 		    height: '100%',
@@ -87,7 +195,7 @@
 <div id="dg" style="width:50%;height:250px;"></div>
 	<div id="toolbar">
 		<a href="javascript:void(0)" class="easyui-linkbutton"
-			iconCls="icon-add" plain="true" onclick="newBean()">添加角色</a> <a
+			iconCls="icon-add" plain="true" onclick="add()">添加角色</a> <a
 			href="javascript:void(0)" class="easyui-linkbutton"
 			iconCls="icon-remove" plain="true" onclick="destroyBean()">删除角色</a>
 	</div>
@@ -104,7 +212,7 @@
 			</div>
 			<div class="fitem Name">
 				<label>角色描述:</label>
-				 <input name="<%=Role.DESCRIPTION%>" id="loginName" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
+				 <input name="description" id="description" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
 			</div>
 		</form> 
 	</div>

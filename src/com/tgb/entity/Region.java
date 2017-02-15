@@ -43,6 +43,19 @@ public class Region {
 	//城市编码
 	@Column(name="citycode",length=50)
 	private String citycode;
+	//省编码
+	@Column(name="pCode",length=50)
+	private String pCode;
+	//市编码
+	@Column(name="cCode",length=50)
+	private String cCode;
+	//区编码
+	@Column(name="dCode",length=50)
+	private String dCode;
+	
+	//省市区名
+	@Column(name="areaName")
+	private String areaName;
 	
 	//操作人
 	@Column(name="CreateBy", length=50, updatable=false)
@@ -140,6 +153,46 @@ public class Region {
 		this.createTime = createTime;
 	}
 
+
+	public String getAreaName() {
+		return areaName;
+	}
+
+
+	public void setAreaName(String areaName) {
+		this.areaName = areaName;
+	}
+
+
+	public String getpCode() {
+		return pCode;
+	}
+
+
+	public void setpCode(String pCode) {
+		this.pCode = pCode;
+	}
+
+
+	public String getcCode() {
+		return cCode;
+	}
+
+
+	public void setcCode(String cCode) {
+		this.cCode = cCode;
+	}
+
+
+	public String getdCode() {
+		return dCode;
+	}
+
+
+	public void setdCode(String dCode) {
+		this.dCode = dCode;
+	}
+	
 	
 
 	

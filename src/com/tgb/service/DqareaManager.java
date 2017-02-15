@@ -5,6 +5,7 @@ import java.util.List;
 import com.sun.org.apache.xml.internal.resolver.helpers.PublicId;
 import com.tgb.entity.Dqarea;
 import com.tgb.entity.MenuItem;
+import com.tgb.entity.Region;
 import com.tgb.entity.Role;
 import com.tgb.entity.Staff;
 import com.tgb.entity.Standard;
@@ -15,13 +16,20 @@ public interface DqareaManager {
 
 	Long getCount();
 
-	public void updateStandard(Staff staff);
-
-	public void delStandard(String id);
-
-	 void addStandard(Staff staff);
 
 	List<Staff> findAll();
+
+	void updateDqarea(Dqarea dqarea);
+
+	void addDqarea(Dqarea dqarea);
+
+	void delDqarea(String id);
+
+	List<Dqarea> queryByPage(int page, int rows, String dqName, String did,
+			String qStarttime, String qEndtime);
+
+	Long queryCount(String dqName, String did, String qStarttime,
+			String qEndtime);
 
 	
 }

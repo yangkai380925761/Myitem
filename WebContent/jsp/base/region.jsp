@@ -10,8 +10,13 @@
 <link href=${pageContext.request.contextPath }/images/LOGO.ico" rel="shortcut icon" type="image/x-icon" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>收派标准</title>
+<title>区域管理</title>
 <jsp:include page="/resources.jsp"></jsp:include>
+<script src="${pageContext.request.contextPath }/js/Area.js" type="text/javascript"></script>
+<script src="${pageContext.request.contextPath }/js/AreaData_min.js" type="text/javascript"></script>
+<script src="${pageContext.request.contextPath }/js/upload/jquery.ocupload-1.1.2.js" type="text/javascript"></script>
+<script src="${pageContext.request.contextPath }/js/upload/ExportExcelDlg.js" type="text/javascript"></script>
+<script src="${pageContext.request.contextPath }/js/jquery.form.js" type="text/javascript"></script>
 <style type="text/css">
 	#fm {
 	margin: 0;
@@ -44,19 +49,50 @@
 }
 .textbox .textbox-text{white-space: pre-line;}
 .newPass{width:200px; height:25px; margin-top:10px;}
-.datagrid-htable{font-size:18px; text-align:center; font-weight:bold; height:40px; color:#000;}
+.datagrid-htable{font-size:18px; text-align:center; font-weight:bold; height:30px; color:#000;}
 .datagrid-btable{text-align:center;}
-.datagrid-btable tr{height:40px;}
+.datagrid-btable tr{height:30px;}
+.font_style{
+	font-weight:bold;
+	font-family:Microsoft YaHei;
+	font-size:15px;
+}
+.yhorder_btn{
+	width:100px;
+	height:30px;
+	background-color:#01B5E6;
+	border:none;
+	cursor:pointer;
+	outline:none;
+	margin-left:15px;
+	color:#fff;
+	display:block;
+	float:left;
+	line-height:30px;
+	text-decoration : none;
+}
+.yhorder_btn_find:hover{
+	background-color:#0085a9;
+}
+.yhorder_btn_res{
+	background-color:#01B5E6;
+}
+.yhorder_btn_res:hover{
+	background-color:#0085a9;
+}
+.img_class{
+	position:relative;
+	top:-9px;
+}
 </style>
 </head>
-<body>
 <script type="text/javascript">
 var url;
 	function add(){
 		 $('#dlg').dialog('open').dialog('setTitle',' ');
 		 $('#fm').form('clear');
-		 url = '<%=basePath%>standard/add.action';
-		 $('#ftitle').html("添加标准");
+		 url = '<%=basePath%>region/add.action';
+		 $('#ftitle').html("添加区域");
 	}
 	function shows(){ //查看
 	    var row = $('#dg').datagrid('getSelected');
@@ -76,17 +112,32 @@ var url;
 	
 	//编辑操作
 	function editBean(row){
+		alert(row.dCode);
+		changeCity(row.cCode,'seachdistrict','seachdistrict');
+		initComplexArea('seachprov', 'seachcity', 'seachdistrict', area_array, sub_array, row.pCode, row.cCode, row.dCode);
+		$("option[value='"+row.dCode+"']").attr("selected",true);
 	    if (row){
 	        $('#dlg').dialog('open').dialog('setTitle','');
 	        $('#fm').form('load',row);
-	        url = '<%=basePath%>standard/update.action';    
-	        $('#ftitle').html("修改标准信息");
+	        url = '<%=basePath%>region/update.action';    
+	        $('#ftitle').html("修改区域信息");
 	    }
 	}
 	
 	//修改保存
 	function saveBean(){
 		//alert($('#userName').val());
+		var area=showAreaID();
+		//alert("我是省，"+$("#seachprov").val()); //44
+		//alert("我是市,"+$("#seachcity").val());	 //4401
+		//alert("我是区,"+$("#seachdistrict").val()); //440105
+		$("#areaName").val(area);
+		var areaid=getAreaID();
+		$("#pCode").val(areaid.substring(0,2));
+		$("#cCode").val(areaid.substring(0,4));
+		if(areaid.substring(4,6)!=""){
+			$("#dCode").val(areaid.substring(0,6));
+		}
 		 $('#fm').form('submit',{
 		        url: url,
 		        onSubmit: function(){
@@ -106,7 +157,7 @@ var url;
 	            if (r){
 	            	for(var i=0; i<rows.length; i++){
 	            		var row=rows[i];
-	             $.post('<%=basePath%>standard/delete.action',{id:row.id},function(result){
+	             $.post('<%=basePath%>region/delete.action',{id:row.id},function(result){
 	                    if (result.success){
 	                        $('#dg').datagrid('reload');    // reload the user data
 	                    } else {
@@ -156,6 +207,10 @@ var url;
 	}  
 	//---------------结束-----------------------
 	$(function(){
+		initComplexArea('seachprov', 'seachcity', 'seachdistrict', area_array, sub_array, '44', '0', '0');
+		initComplexArea('seachprov1', 'seachcity1', 'seachdistrict1', area_array, sub_array, '0', '0', '0');
+		//loadRegion();
+		loadBtn();
 		$('#dg').datagrid({
 		    height: '100%',
 		    fit:true,
@@ -169,7 +224,7 @@ var url;
 		    showFooter: true,	//定义是否显示行底（如果是做统计表格，这里可以显示总计等）
 			loadMsg : '数据加载中请稍后……',	//当从远程站点载入数据时，显示的一条快捷信息
 			pagination : true,		//设置true将在数据表格底部显示分页工具栏。
-		    toolbar:"#toolbar",
+		    toolbar:"#tb",
 		    checkOnSelect:false,
 		    selectOnCheck:false,
 		    
@@ -192,36 +247,391 @@ var url;
 		});
 			    
 	});
-</script>
+	
+	//--------------------获取省市县的方法--------------
+	//得到地区码
+	
+function getAreaID(){
+	var area = 0;          
+	if($("#seachdistrict").val() != "0"){
+		area = $("#seachdistrict").val();                
+	}else if ($("#seachcity").val() != "0"){
+		area = $("#seachcity").val();
+	}else{
+		area = $("#seachprov").val();
+	}
+	return area;
+}
+	//--------------------查询获得省市方法--------------------
+function getAreaID1(){
+	var area = 0;          
+	if($("#seachdistrict1").val() != "0"){
+		area = $("#seachdistrict1").val();                
+	}else if ($("#seachcity1").val() != "0"){
+		area = $("#seachcity1").val();
+	}else{
+		area = $("#seachprov1").val();
+	}
+	return area;
+}
+function showAreaID1() {
+	//地区码
+	var areaID = getAreaID1();
+	//地区名
+	var areaName = getAreaNamebyID1(areaID) ;
+	//alert("您选择的地区码：" + areaID + "      地区名：" + areaName);
+	return areaName;
+}
+//根据地区码查询地区名
+function getAreaNamebyID1(areaID){
+	var areaName = "";
+	if(areaID.length == 2){
+		areaName = area_array[areaID];
+	}else if(areaID.length == 4){
+		var index1 = areaID.substring(0, 2);
+		areaName = area_array[index1] + " " + sub_array[index1][areaID];
+	}else if(areaID.length == 6){
+		var index1 = areaID.substring(0, 2);
+		var index2 = areaID.substring(0, 4);
+		areaName = area_array[index1] + " " + sub_array[index1][index2] + " " + sub_arr[index2][areaID];
+	}
+	return areaName;
+}
+
+
+	//-----------查询结束--------------------
+
+
+function showAreaID() {
+	//地区码
+	var areaID = getAreaID();
+	//地区名
+	var areaName = getAreaNamebyID(areaID) ;
+	//alert("您选择的地区码：" + areaID + "      地区名：" + areaName);
+	return areaName;
+}
+
+
+//根据地区码查询地区名
+function getAreaNamebyID(areaID){
+	var areaName = "";
+	if(areaID.length == 2){
+		areaName = area_array[areaID];
+	}else if(areaID.length == 4){
+		var index1 = areaID.substring(0, 2);
+		areaName = area_array[index1] + " " + sub_array[index1][areaID];
+	}else if(areaID.length == 6){
+		var index1 = areaID.substring(0, 2);
+		var index2 = areaID.substring(0, 4);
+		areaName = area_array[index1] + " " + sub_array[index1][index2] + " " + sub_arr[index2][areaID];
+	}
+	return areaName;
+}
+//---------------结束-----------------
+function toImportExcel() {  //打开导入excel对话框
+	
+	$('#importdlg').dialog('open').dialog('setTitle','导入Excel');
+	 $.messager.alert('操作提示',"请选择d盘根目录下的xls文件");
+}
+//JS校验form表单信息
+function checkData(){
+	var fileDir = $("#importfile").val();
+	var suffix = fileDir.substr(fileDir.lastIndexOf("."));
+	if("" == fileDir){
+		$.messager.alert('操作提示', "选择需要导入的Excel文件！", 'warning');
+		return false;
+	}
+	if(".xls" != suffix && ".xlsx" != suffix ){
+		$.messager.alert('操作提示', "选择Excel格式的文件导入！", 'warning');
+		return false;
+	}
+	return true;
+}
+$(document).ready(function(){
+		$('#importExcel').click(function(){
+ 		if(checkData()){
+ 			var fileDir = $("#importfile").val();
+ 			$('#importfm').ajaxSubmit({  
+ 				url: '<%=basePath%>region/importXls.action?file='+fileDir,
+ 				dataType: 'text',
+ 				beforeSend:function(){$("#loadBox").show();},
+				complete:function(){$("#loadBox").hide();},
+ 				success: resutlMsg,
+ 				error: errorMsg
+ 			}); 
+ 			function resutlMsg(msg){
+ 				var obj = JSON.parse(msg);
+ 				if(obj.state==1){
+	       			$('#importdlg').dialog('close');        // close the dialog
+	           		$('#dg').datagrid('reload');    // reload the user data
+	           		 $.messager.alert("操作提示", "数据导入成功！");
+	           		 <%-- $.messager.confirm('确认', '导入文件数据成功！是否查看错误数据？', function (r) {
+        				if (r) {
+        					window.location.href="<%=basePath%>console/framework/order/DupDataExcel.jsp";
+        				}
+    				}); --%>
+	       		}else {
+	       			$.messager.alert('操作提示', '导入excel文件失败！', 'warning');
+	       		}
+					
+				}
+				function errorMsg(){
+					$.messager.alert('操作提示', "导入excel出错！", 'warning');
+				}
+ 		}
+		});
+		
+		
+  });
+  function loadRegion(){
+	  $.ajax({
+		    type : "POST",                                            // 使用post方法访问后台
+		    dataType : "json",                                        // 返回json格式的数据
+		    url: "<%=basePath %>region/ajaxList.action",                                    // 要访问的后台地址
+		    complete : function() {}, 
+		    success : function(result) {// result为返回的数据
+		    	var list=result.regionList;
+		  //console.log(result.regionList);
+		    	for(var i=0;i<list.length;i++){
+		    		console.log(list[i].province);
+		    		$("#province").append('<option value="'+list[i].province+'">'+list[i].province+'</option>');
+		    		$("#city").append('<option value="'+list[i].city+'">'+list[i].city+'</option>');
+		    		$("#district").append('<option value="'+list[i].district+'">'+list[i].district+'</option>');
+		    		
+		    	}
+		    	//$('select').comboSelect();
+		    }
+	  });
+  }
+
+  //加载用户权限
+	 function loadBtn(){
+			$.ajax({
+				 url : '${pageContext.request.contextPath}/user/getCurrentUser.action',
+				 type:"post",
+				 dataType : 'json',
+				 async:false,
+				 success : function(data) {
+					var userList=data.userInfo;
+					//console.log(userList[0]);
+					quanxianNum=userList[0].quanxianNum;
+					var newNum=getNum(quanxianNum);
+					var oldbtnstr = "3-1,3-2,3-3,3-4,3-5,3-6,3-7";
+					var szBtnstr = oldbtnstr.split(",");
+					var delBtnstr = "";
+					for(var i=0; i<szBtnstr.length; i++){
+						if(newNum.indexOf(szBtnstr[i])>=0){
+							if(szBtnstr[i]=="3-1"){
+								return false;
+							}else if(szBtnstr[i]=="3-7"){
+								$("#addbtn_qx").remove();
+								$("#updatbtn_qx").remove();
+								$("#delbtn_qx").remove();
+								$("#show_qx").remove();
+								$("#import_qx").remove();
+								return false;
+							}
+						}else{
+							delBtnstr += szBtnstr[i]+",";
+						}
+					}
+					delBtnstr = delBtnstr.substring(0,delBtnstr.length-1);
+					var onedel = delBtnstr.split(",");
+					for(var i=0; i<onedel.length; i++){
+						if(onedel[i]=="3-2"){
+							$("#addbtn_qx").remove();
+						}else if(onedel[i]=="3-4"){
+							$("#updatbtn_qx").remove();
+						}else if(onedel[i]=="3-3"){
+							$("#delbtn_qx").remove();
+						}else if(onedel[i]=="3-5"){
+							$("#show_qx").remove();
+						}else if(onedel[i]=="3-6"){
+							$("#import_qx").remove();
+						}
+					}
+					
+					
+				},
+			 });
+		}
+		
+		function getNum(ss){
+		 	var dd = ss.split(",");
+		   	var newbtn = "";
+		   	for(var zz=0;zz<dd.length;zz++){
+		   		var qq=dd[zz];
+		   		if("3-"==qq.substring(0,2)){
+					newbtn += qq+",";
+		   		}
+		   	}
+		   	newbtn = newbtn.substring(0,newbtn.length-1);
+		   	return newbtn;
+		}
+		
+  
+  
+  
+function reset(){ //重置
+	$('#qfm').form('clear');
+}
+//-------------------------------查询方法------------------------------
+
+function query(){ //查询 
+	var province=""; //省
+	var city=""; 		//市
+	var district="";			// 区
+	
+	var areaId=getAreaID1();
+	if(areaId!=null){
+		var areaName=showAreaID1();
+		var areaNames=areaName.split(" ");
+		if(areaNames[0]!=null){
+			province=areaNames[0];
+		}
+		if(areaNames[1]!=null){
+			city=areaNames[1];
+		}
+		if(areaNames[2]!=null){
+			 district=areaNames[2];
+		}
+	}
+	
+	var shortcode = $("#shortcode").val().trim();  //简码
+	var citycode = $("#citycode").val().trim(); 	//城市编码
+	var postcode = $("#postcode").val().trim(); 	//邮编
+	var qStarttime = $('#qStarttime').datebox('getValue');
+	var qEndtime = $('#qEndtime').datebox('getValue');
+	//console.log(standardName+","+minweight+","+maxweight+","+createBy+","+qStarttime+","+qEndtime);
+	$('#dg').datagrid({
+	    height: '100%',
+	    fit:true,
+	    url: '<%=basePath %>region/queryRegionList.action?province='+province+'&city='+city+'&district='+district+'&shortcode='+shortcode+'&citycode='+citycode+'&postcode='+postcode+'&qStarttime='+qStarttime+'&qEndtime='+qEndtime,
+	    method: 'POST',
+	    striped: true,  //显示条纹
+	    nowrap: true,	//设置为true，当数据长度超出列宽时将会自动截取。
+	    pageSize: 10,		//当设置分页属性时，初始化每页记录数。
+	    pageNumber:1, 	//当设置分页属性时，初始化分页码。
+	    pageList: [10, 20, 50, 100, 150, 200],	//当设置分页属性时，初始化每页记录数列表。
+	    showFooter: true,	//定义是否显示行底（如果是做统计表格，这里可以显示总计等）
+		loadMsg : '数据加载中请稍后……',	//当从远程站点载入数据时，显示的一条快捷信息
+		pagination : true,		//设置true将在数据表格底部显示分页工具栏。
+	    toolbar:"#tb",
+	    checkOnSelect:false,
+	    selectOnCheck:false,
+	    
+	    columns: [[
+	        { field: 'ck', checkbox: true },
+		        { field: 'province', title: '省', width: 150},
+		        { field: 'city', title: '市', width: 150},
+		        { field: 'district', title: '区', width: 150},
+		        { field: 'postcode', title: '邮编', width: 150},
+		        { field: 'shortcode', title: '简码', width: 150},
+		        { field: 'citycode', title: '城市编码', width: 150},
+		        { field: 'createBy', title: '操作人', width: 150},
+		        { field: 'createTime', title: '创建时间', width: 120,align: 'center',formatter: formatDatebox}
+	    ]],		
+	   
+	    onDblClickRow :function(rowIndex,rowData){
+	    	editBean(rowData);
+	   	}
+
+	});
+}
  
-<div id="dg" style="width:50%;height:250px;"></div>
-	<div id="toolbar">
-		<div id="tb" style="height:auto;">		
-		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cut',plain:true" onclick="destroyBean()">删除</a>
-		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="editBean(this)">修改</a>
-		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="shows()">查看</a>
-		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="add()">新增</a>
-		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="toImportExcel()">导入</a>
-	</div>	
+</script>
+ <body >
+ <div id="contain" >
+	<form id="qfm"  action="">
+	  <div id="yhHeader" >
+		<div style="margin-bottom:-10px;padding-top:5px;padding-left:10px">
+			<span>
+				<label class="font_style">省&nbsp;&nbsp;&nbsp;：&nbsp;&nbsp;</label>
+				<!-- <select id="province"   style="width:126px;height:25px">
+				
+				</select> -->
+				<select id="seachprov1" name="seachprov1" style="width:126px;height:25px" onChange="changeComplexProvince(this.value, sub_array, 'seachcity1', 'seachdistrict1');"></select>
+			</span>
+			<span>
+				<label class="font_style">市&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：&nbsp;&nbsp;</label>
+				<!-- <select id="city"   style="width:126px;height:25px">
+				
+				</select> -->
+				<select id="seachcity1" name="seachcity1" style="width:126px;height:25px" onChange="changeCity(this.value,'seachdistrict1','seachdistrict1');"></select>
+			</span>
+			<span>
+				<label class="font_style">区&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：&nbsp;&nbsp;</label>
+				<!-- <select id="district"   style="width:127px;height:25px">
+				
+				</select> -->
+				<span id="seachdistrict_div"><select id="seachdistrict1" style="width:126px;height:25px" name="seachdistrict1"></select></span>
+			</span>
+			<span><label class="font_style">简码：&nbsp;&nbsp;&nbsp;&nbsp;</label><input id="shortcode" type="text"   placeholder="请输入简码" style="width:125px;height:20px"></span>
+			<span style="width:200px; position:relative; right:-1000px; text-align:center; top:-27px; display:block;  overflow:hidden;"><a href="javascript:void(0)" data-options="iconCls:'icon-search',plain:false" class="yhorder_btn  yhorder_btn_res"  onclick="reset()"><img src="<%=basePath %>js/easyui/themes/default/images/res.png"/><span class="img_class"  >重置</span></a></span>	
+		</div>	
+		<div style="margin-bottom:-10px;padding-left:10px">
+			<span><label class="font_style">邮编：&nbsp;&nbsp;&nbsp;</label><input id="postcode" type="text"   placeholder="请输入邮编" style="width:125px;height:20px"></span>
+			<span><label class="font_style">城市编码：&nbsp;&nbsp;&nbsp;</label><input id="citycode" type="text"   placeholder="请输入城市编码" style="width:125px;height:20px"></span>
+			<span><label class="font_style">创建时间：</label><input id="qStarttime" class="easyui-datebox"  style="width:130px;height:25px"></span>
+			<span><label class="font_style">　至　　</label><input id="qEndtime" class="easyui-datebox"  style="width:130px;height:25px;"></span>															
+			<span style="width:200px; position:relative; right:-1000px; text-align:center; top:-27px; display:block;  overflow:hidden;"><a href="javascript:void(0)" data-options="iconCls:'icon-search',plain:false"  class="yhorder_btn yhorder_btn_find"  onclick="query()"><img src="<%=basePath %>js/easyui/themes/default/images/find.png"/><span class="img_class"  >查询</span></a></span>			
+		</div>
+	  </div>		
+		
+	</form>
+	
+	<div style="width:100%;height:420px;">
+		<div id="dg" style="width:100%;height:420px;">
+		</div>
 	</div>
+	
+	<div id="tb" style="height:auto;">		
+		<a id="delbtn_qx" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cut',plain:true" onclick="destroyBean()">删除</a>
+		<a id="updatbtn_qx" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="editBean(this)">修改</a>
+		<a id="show_qx" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="shows()">查看</a>
+		<a id="addbtn_qx" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="add()">新增</a>
+		<a id="import_qx" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="toImportExcel()">批量导入</a>
+	</div>	
+	
+	</div>
+	
+	<div id="importdlg" class="easyui-dialog" style="margin-top:40px; width: 300px; height: 150px; padding: 10px 20px" closed="true">
+	  <form id="importfm" method="post"  enctype="multipart/form-data"novalidate >
+		<!-- <input id="importfile" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" /> -->
+		<input id="importfile" type="file"  /> 
+	  </form>
+	   <a href="javascript:void(0)" class="easyui-linkbutton c6" id="importExcel"
+			iconCls="icon-ok" style="margin-top:20px;">确定</a> 
+		 <a href="javascript:void(0)" class="easyui-linkbutton"
+			iconCls="icon-cancel" onclick="javascript:$('#importdlg').dialog('close')"
+			style="margin-left:40px; margin-top:20px">取消</a>
+	</div>
+	  <div id="loadBox" style="display:none; position:absolute; top:30%; left:45%; background:rgba(0,0,0,0.5); z-index:99999; font-size:12px; padding:10px; border-radius:5px; color:#ffffff;">
+	  	正在导入...
+	  </div>
+	  
 	<div id="dlg" class="easyui-dialog"
 		style="width: 580px; height: 450px; padding: 10px 20px" closed="true"
 		buttons="#dlg-buttons">
 		<div class="ftitle" id="ftitle"></div>
 		<form id="fm" method="post"  novalidate>
 			<input id="<%=Region.REGIONID %>" name="<%=Region.REGIONID %>"  type="hidden">
+			<input id="areaName" name="areaName"  type="hidden">
+			<input id="pCode" name="pCode"  type="hidden">
+			<input id="cCode" name="cCode"  type="hidden">
+			<input id="dCode" name="dCode"  type="hidden">
 			
 			<div class="fitem ">
 				<label>省:</label>
-				<input name="province" id="province" class="easyui-validatebox" data-options="required:true,validType:['length[1,10]']"/>
+				<select id="seachprov" name="seachprov" onChange="changeComplexProvince(this.value, sub_array, 'seachcity', 'seachdistrict');"></select>
 			</div>
 			<div class="fitem ">
 				<label>市:</label>
-				 <input name="city" id="city" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
+				<select id="seachcity" name="homecity" onChange="changeCity(this.value,'seachdistrict','seachdistrict');"></select>
 			</div>
 			<div class="fitem">
 				<label>区:</label>
-				 <input name="district" id="district" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
+				<span id="seachdistrict_div"><select id="seachdistrict" name="seachdistrict"></select></span>
 			</div>
 			<div class="fitem">
 				<label>邮编:</label>
@@ -243,6 +653,8 @@ var url;
 		<a href="javascript:void(0)" class="easyui-linkbutton"	iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')"	style="width: 90px">取消</a>
 	</div>
 	
+	
+	  
 </body>
 
 </html>

@@ -14,13 +14,24 @@ public interface StaffManager {
 
 	Long getCount();
 
-	public void updateStandard(Staff staff);
+	public void updateStaff(Staff staff);
 
-	public void delStandard(String id);
-
-	 void addStandard(Staff staff);
+	public void delStaff(String id);
 
 	List<Staff> findAll();
+
+	public void addStaff(Staff staff);
+
+	List<Staff> findInfoByName(String name);
+
+	List<Staff> queryByPage(int page, int rows, String staffName, String phone,
+			String station, String haspda, String standard, String qStarttime,
+			String qEndtime);
+
+	Long queryCount(String staffName, String phone, String station,
+			String haspda, String standard, String qStarttime, String qEndtime);
+
+
 
 	
 }

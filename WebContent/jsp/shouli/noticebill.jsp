@@ -11,11 +11,9 @@
 <link href=${pageContext.request.contextPath }/images/LOGO.ico" rel="shortcut icon" type="image/x-icon" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>取派员设置</title>
+<title>业务受理</title>
 <jsp:include page="/resources.jsp"></jsp:include>
 
-<link rel="stylesheet" href="${pageContext.request.contextPath }/css/combo.select.css">
-<script src="${pageContext.request.contextPath }/js/jquery.combo.select.js"></script>
 
 <style type="text/css">
 	#fm {
@@ -53,228 +51,115 @@
 .datagrid-btable{text-align:center;}
 .datagrid-btable tr{height:40px;}
 .dowebok { width: 400px; margin: 100px auto;}
+.titleClass{width:100px; font-size:12px; color:#666666;}
 </style>
 </head>
 <body >
 <script type="text/javascript">
-var url;
-var i=0;
-	function add(){
-		
-		 $('#dlg').dialog('open').dialog('setTitle',' ');
-		 if(i==0){
-			 loadData();
-			 i=1;
-		 }
-		 //$(".combo-select").after('<label>收派标准:</label>');
-		
-		 $('#fm').form('clear');
-		 url = '<%=basePath%>standard/add.action';
-		
-		 $('#ftitle').html("添加标准");
-	}
-	function shows(){ //查看
-	    var row = $('#dg').datagrid('getSelected');
-	    var rows = $('#dg').datagrid('getSelections');
-	    if (row == undefined) {
-	     		$.messager.alert('操作提示', "没有选择被操作的记录！", 'warning');
-	     		return;
-	     	 } 
-	    if(rows.length>1){
-	    	$.messager.alert('操作提示', "请选择一条数据！", 'warning');
-	     	return false;
-	    }  
-		if (row){
-			editBean(row);
-		}
-}
-	
-	//编辑操作
-	function editBean(row){
-	    if (row){
-	        $('#dlg').dialog('open').dialog('setTitle','');
-	        $('#fm').form('load',row);
-	        url = '<%=basePath%>standard/update.action';    
-	        $('#ftitle').html("修改标准信息");
-	    }
-	}
-	
-	//修改保存
-	function saveBean(){
-		//alert($('#userName').val());
-		 $('#fm').form('submit',{
-		        url: url,
-		        onSubmit: function(){
-		            return $(this).form('validate');
-		        },
-		        success: function(result){
-		            $('#dlg').dialog('close');        // close the dialog
-		            $('#dg').datagrid('reload');    // reload the user data
-		        }
-		 });
-	}
-	//删除
-	function destroyBean(){
-		var rows = $('#dg').datagrid('getChecked');
-	    if (rows.length>0){
-	        $.messager.confirm('温馨提示','你真的要删除么?',function(r){
-	            if (r){
-	            	for(var i=0; i<rows.length; i++){
-	            		var row=rows[i];
-	             $.post('<%=basePath%>standard/delete.action',{id:row.id},function(result){
-	                    if (result.success){
-	                        $('#dg').datagrid('reload');    // reload the user data
-	                    } else {
-	                        $.messager.show({    // show error message
-	                            title: 'Error',
-	                            msg: "删除失败"
-	                        });
-	                    }
-	                },'json'); 
-	            }
-	            }
-	        });
-	    }
-	}
-	//-------------格式化日期插件--------------------------
-	Date.prototype.format = function (format) {  
-	    var o = {  
-	        "M+": this.getMonth() + 1, // month  
-	        "d+": this.getDate(), // day  
-	        "h+": this.getHours(), // hour  
-	        "m+": this.getMinutes(), // minute  
-	        "s+": this.getSeconds(), // second  
-	        "q+": Math.floor((this.getMonth() + 3) / 3), // quarter  
-	        "S": this.getMilliseconds()  
-	        // millisecond  
-	    }  
-	    if (/(y+)/.test(format))  
-	        format = format.replace(RegExp.$1, (this.getFullYear() + "")  
-	            .substr(4 - RegExp.$1.length));  
-	    for (var k in o)  
-	        if (new RegExp("(" + k + ")").test(format))  
-	            format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));  
-	    return format;  
-	}  
-	function formatDatebox(value) {  
-	    if (value == null || value == '') {  
-	        return '';  
-	    }  
-	    var dt;  
-	    if (value instanceof Date) {  
-	        dt = value;  
-	    } else {  
-	        dt = new Date(value);  
-	    }  
-	  
-	    return dt.format("yyyy-MM-dd"); //扩展的Date的format方法(上述插件实现)  
-	}  
-	//---------------结束-----------------------
 	$(function(){
-		$('#dg').datagrid({
-		    height: '100%',
-		    fit:true,
-		    url: '<%=basePath %>staff/getStaffList.action',
-		    method: 'POST',
-		    striped: true,  //显示条纹
-		    nowrap: true,	//设置为true，当数据长度超出列宽时将会自动截取。
-		    pageSize: 10,		//当设置分页属性时，初始化每页记录数。
-		    pageNumber:1, 	//当设置分页属性时，初始化分页码。
-		    pageList: [10, 20, 50, 100, 150, 200],	//当设置分页属性时，初始化每页记录数列表。
-		    showFooter: true,	//定义是否显示行底（如果是做统计表格，这里可以显示总计等）
-			loadMsg : '数据加载中请稍后……',	//当从远程站点载入数据时，显示的一条快捷信息
-			pagination : true,		//设置true将在数据表格底部显示分页工具栏。
-		    toolbar:"#toolbar",
-		    checkOnSelect:false,
-		    selectOnCheck:false,
-		    
-		    columns: [[
-		        { field: 'ck', checkbox: true },
-		        { field: 'id', title: '通知单号', width: 150},
-		        { field: 'user', title: '姓名', width: 150},
-		        { field: 'phone', title: '手机', width: 150},
-		        { field: 'station', title: '所属单位', width: 150},
-		        { field: 'haspda', title: 'pda', width: 150,
-		        	formatter : function(data,row, index){
-					if(data=="1"){
-						return "有";
-					}else{
-						return "无";
-					}
-				}},
-				{ field: 'standard', title: '收派标准', width: 150},
-		        { field: 'createTime', title: '创建时间', width: 120,align: 'center',formatter: formatDatebox}
-		    ]],		
-		   
-		    onDblClickRow :function(rowIndex,rowData){
-		    	editBean(rowData);
-		   	}
-
-		});
-		  
-	});
-	 function loadData() {
+		$("body").css({visibility:"visible"});
 		
-		    $.ajax({
-		    type : "POST",                                            // 使用post方法访问后台
-		    dataType : "json",                                        // 返回json格式的数据
-		    url: "<%=basePath %>standard/ajaxList.action",                                    // 要访问的后台地址
-		    complete : function() {}, 
-		    success : function(result) {// result为返回的数据
-		    	var list=result.standardList;
-		    	for(var i=0;i<list.length;i++){
-		    		//alert(list[i].standardName);
-		    		$("#standardId").append('<option value="'+i+'">'+list[i].standardName+'</option>');
-		    	}
-		    	$('select').comboSelect();
-		    }
-		    
-		   }); 
-		  } 
+		// 点击新单按钮，将业务通知单 保存
+		$('#save').click(function(){
+			if($("#noticebillForm").form('validate')){
+				//$('#noticebillForm').submit();
+				 alert("提交成功！");
+				 $('#noticebillForm').form('submit',{
+				        url:'${pageContext.request.contextPath }/notibill/add.action',
+				        onSubmit: function(){
+				            return $(this).form('validate');
+				        },
+				        success: function(result){
+				            window.location.href="${pageContext.request.contextPath }/notibill/index.action";
+				        }
+				 });
+			}else{
+				$.messager.alert('警告','表单存在非法数据项！','warning');
+			}
+		});
+	});
 </script>
- 
-<div id="dg" style="width:50%;height:250px;"></div>
-	<div id="toolbar">
-		<div id="tb" style="height:auto;">		
-		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="destroyBean()">新单</a>
-		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="destroyBean()">工单操作</a>
-	</div>	
+</head>
+<body class="easyui-layout" style="visibility:hidden;">
+	<div region="north" style="height:31px;overflow:hidden;" split="false"
+		border="false">
+		<div class="datagrid-toolbar">
+			<a id="save" icon="icon-save" href="#" class="easyui-linkbutton"
+				plain="true">提交新单</a>
+			<a id="edit" icon="icon-edit" href="${pageContext.request.contextPath }/workbill/index.action" class="easyui-linkbutton"
+				plain="true">工单操作</a>	
+		</div>
 	</div>
-	<div id="dlg" class="easyui-dialog"
-		style="width: 580px; height: 450px; padding: 10px 20px" closed="true"
-		buttons="#dlg-buttons" >
-		<div class="ftitle" id="ftitle"></div>
-		<form id="fm" method="post"  novalidate>
-				<input id="<%=Staff.STAFFDID %>" name="<%=Staff.STAFFDID %>"  type="hidden">
-			<div class="fitem ">
-				<label>取派员姓名:</label>
-				<input name="standardName" id="standardName" class="easyui-validatebox" data-options="required:true,validType:['length[1,10]']"/>
-			</div>
-			<div class="fitem ">
-				<label>取派员电话:</label>
-				 <input name="phone" id="phone" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
-			</div>
-			<div class="fitem">
-				<label>移动设备:</label>
-				 <input type="radio" name="haspda" value="0">否</input>
-                 <input type="radio" name="haspda" value="1">是</input>
-			</div>
-			<div class="fitem ">
-				<label>所属单位:</label>
-				 <input name="station" id="station" class="easyui-textbox" data-options="required:true,validType:['length[3,15]']"  />
-			</div>
-				<span>收派标准:</span>
-				 <select   id="standardId" name="standard.id" style="width:160px;"  >
-						
-				 </select>
-			
-		</form> 
+	<div region="center" style="overflow:auto;padding:5px;" border="false">
+		<form id="noticebillForm" action="${pageContext.request.contextPath }/notibill/add.action" method="post">
+			<table class="table-edit" width="100%" align="center">
+				<tr >
+					<td class=titleClass colspan="4"><font color="red">客户信息</font></td>
+				</tr>
+				<tr >
+					<td class=titleClass colspan="4">&nbsp;&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="titleClass">来电号码:</td>
+					<td><input type="text" class="easyui-validatebox" name="linkNum"
+						required="true" /></td>
+					<td class="titleClass">客户编号:</td>
+					<td><input type="text" class="easyui-validatebox" name="customerId"
+						required="true" /></td> 
+				</tr>
+				<tr>
+					<td class="titleClass">客户姓名:</td>
+					<td><input type="text" class="easyui-validatebox" name="customerName"
+						required="true" /></td>
+					<td class="titleClass">联系人:</td>
+					<td><input type="text" class="easyui-validatebox" name="linkman"
+						required="true" /></td>
+				</tr>
+				<tr >
+					<td class=titleClass colspan="4">&nbsp;&nbsp;</td>
+				</tr>
+				<tr >
+					<td class="titleClass" colspan="4"><font color="red">货物信息</font></td>
+				</tr>
+				<tr >
+					<td class=titleClass colspan="4">&nbsp;&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="titleClass">品名:</td>
+					<td><input type="text" class="easyui-validatebox" name="product"
+						required="true" /></td>
+					<td class="titleClass">件数:</td>
+					<td><input type="text" class="easyui-numberbox" name="num"
+						required="true" /></td>
+				</tr>
+				<tr>
+					<td class="titleClass">重量:</td>
+					<td><input type="text" class="easyui-validatebox" name="weight"
+						required="true" /></td> 
+					<td class="titleClass" >体积:</td>
+					<td><input type="text" class="easyui-validatebox" name="volume"
+						required="true" /></td>
+				</tr>
+				<tr>
+					<td class="titleClass">取件地址</td>
+					<td colspan="3"><input type="text" class="easyui-validatebox" name="pickaddress"
+						required="true" size="144"/></td>
+				</tr>
+				<tr>
+					<td class="titleClass">到达城市:</td>
+					<td><input type="text" class="easyui-validatebox" name="arrivecity"
+						required="true" /></td>
+					<td class="titleClass">预约取件时间:</td>
+					<td class="titleClass"><input type="text" class="easyui-datebox" name="pickdate"
+						data-options="required:true,editable:false"/></td>
+				</tr>
+				<tr>
+					<td class="titleClass">备注:</td>
+					<td colspan="3"><textarea rows="5" cols="80" type="text" class="easyui-validatebox" name="remark"
+						required="true" ></textarea></td>
+				</tr>
+			</table>
+		</form>
 	</div>
-	<div id="dlg-buttons">
-		<a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="saveBean()" style="width: 90px">保存</a>
-		<a href="javascript:void(0)" class="easyui-linkbutton"	iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')"	style="width: 90px">取消</a>
-	</div>
-	
 </body>
-
 </html>

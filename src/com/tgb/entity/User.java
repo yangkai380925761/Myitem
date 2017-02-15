@@ -50,7 +50,14 @@ public class User {
 	 
 	@Column(name="CreateBy", length=50, updatable=false)
 	private String createBy;
-
+	//拥有的菜单权限
+    @Column(name="quanxianNum")
+    private String quanxianNum;
+	   
+    //拥有的菜单权限（中文备注）
+    @Column(name="quanxianMenu")
+    private String quanxianMenu;
+	   
 	//最近登录时间
 	@Column(name="loginTime", length=50)
 	private Timestamp loginTime;
@@ -133,6 +140,22 @@ public class User {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
+	}
+
+	public String getQuanxianNum() {
+		return quanxianNum;
+	}
+
+	public void setQuanxianNum(String quanxianNum) {
+		this.quanxianNum = quanxianNum;
+	}
+
+	public String getQuanxianMenu() {
+		return quanxianMenu;
+	}
+
+	public void setQuanxianMenu(String quanxianMenu) {
+		this.quanxianMenu = quanxianMenu;
 	}
 
 	

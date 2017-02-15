@@ -21,57 +21,57 @@ public class WorkOrderManage {
 	@GeneratedValue(generator="system-uuid")
 	@GenericGenerator(name = "system-uuid",strategy="uuid")
 	@Column(length=32)
-	private String id;
+	private String id; //工作单编号
 	public static final String WORKORDERID = "id";
-	
+	//到达城市
 	@Column(name="arrivecity",length=32)
 	private String arrivecity;
-	
+	//数量
 	@Column(name="num",length=32)
 	private String num;
-	
+	//重量
 	@Column(name="weight",length=32)
 	private String weight;
-	
+	//配载要求
 	@Column(name="floadreqr",length=32)
 	private String floadreqr;
-	
+	//产品时限
 	@Column(name="prodtimelimit",length=32)
 	private String prodtimelimit;
-	
+	//产品类型
 	@Column(name="prodtype",length=32)
 	private String prodtype;
-	
+	//货物名称
 	@Column(name="product",length=32)
 	private String product;
-	
+	//发货人姓名
 	@Column(name="sendername",length=32)
 	private String sendername;
-	
+	//发货人电话
 	@Column(name="senderphone",length=32)
 	private String senderphone;
-	
+	//发货人地址
 	@Column(name="senderaddr",length=32)
 	private String senderaddr;
-	
+	//收货人姓名
 	@Column(name="receivername",length=32)
 	private String receivername;
-	
+	//收获人电话
 	@Column(name="receiverphone",length=32)
 	private String receiverphone;
-	
+	//收获人地址
 	@Column(name="receiveraddr",length=32)
 	private String receiveraddr;
-	
+	//计费计数
 	@Column(name="feeitemnum",length=32)
 	private String feeitemnum;
-	
+	//实际重量
 	@Column(name="actlweit",length=32)
 	private String actlweit;
-	
+	//体积
 	@Column(name="vol",length=32)
 	private String vol;
-	
+	//为工作流预留的字段（0：未审批 1：已审批）
 	@Column(name="managerCheck",length=32)
 	private String managerCheck;
 	

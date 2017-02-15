@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Repository;
 
 import com.tgb.entity.MenuItem;
 import com.tgb.entity.Role;
+import com.tgb.entity.Staff;
 import com.tgb.entity.Standard;
 import com.tgb.entity.User;
 /**
@@ -72,6 +74,39 @@ public class IDao<T>{
 		Query q = getSession().createQuery(hql);
 		return q.list();
 	}
+	
+	/**
+	 * 查找id 鏌ヨ
+	 * 
+	 * @param c
+	 *            瑕佹煡璇㈢殑瀵硅薄 Class
+	 * @param id
+	 *            瑕佹煡璇㈢殑id
+	 * @return Object
+	 */
+	public <T> List<T> findByHql(String hql, List<Object> sqlParams) {
+		Session session=sessionFactory.getCurrentSession();
+		Query query=session.createQuery(hql);
+		for(int i=0;i<sqlParams.size();i++){
+			if(sqlParams.get(i) instanceof Integer){
+				query.setInteger(i,(Integer)sqlParams.get(i));
+			}
+			if(sqlParams.get(i) instanceof Boolean){
+				query.setBoolean(i,(Boolean)sqlParams.get(i));
+			}
+			if(sqlParams.get(i) instanceof String){
+				query.setString(i,(String)sqlParams.get(i));
+			}
+		}
+		return query.list();
+	}
+	public <T> List<T> findByids(String hql,String ids) {
+		Session session=sessionFactory.getCurrentSession();
+		Query query=session.createQuery(hql);
+		query.setString(0,ids);
+		return query.list();
+	}
+	
 	/**
 	 * 修改的方法
 	 * @param object
@@ -127,4 +162,32 @@ public class IDao<T>{
 		getSession().flush();
 		tran.commit();
 	}
+
+	public <T> List<T> findInfoByName(String hql, String name) {
+		Query query = sessionFactory.getCurrentSession().createQuery(hql);
+		query.setString(0, name);
+		return query.list();
+	}
+
+	public <T> List<T> queryByPage(int page, int rows, String sql) {
+		Query q = getSession().createQuery(sql);
+		return page(q, page, rows);
+	}
+	public <T> Long count(Class<T> c,String hql) {
+		if(hql.equals("")||hql==""||hql==null){
+			hql = "from " + c.getSimpleName();
+		}
+		Query q = getSession().createQuery(hql);
+		return getRows(q);
+	}
+	public long getRows(Query query) {
+		ScrollableResults scrollableResults = query.scroll();
+		scrollableResults.last();
+		if (scrollableResults.getRowNumber() >= 0) {
+			return new Long(scrollableResults.getRowNumber() + 1);
+		}
+		return 0;
+	}
+	
+	
 }

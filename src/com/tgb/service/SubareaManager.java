@@ -2,6 +2,9 @@ package com.tgb.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.sun.org.apache.xml.internal.resolver.helpers.PublicId;
 import com.tgb.entity.MenuItem;
 import com.tgb.entity.Role;
@@ -15,13 +18,26 @@ public interface SubareaManager {
 
 	Long getCount();
 
-	public void updateStandard(Staff staff);
 
-	public void delStandard(String id);
 
-	 void addStandard(Staff staff);
+	List<Subarea> findAll();
 
-	List<Staff> findAll();
+	void addSubuarea(Subarea subarea);
+
+	void updateSubarea(Subarea subarea);
+
+	void delSubarea(String id);
+
+	void exportExcel(HttpServletRequest request, HttpServletResponse response);
+
+	List<Subarea> queryByPage(int page, int rows, String fid,
+			String addressName, String startNum, String endNum,
+			String position, String hasSingle, String qStarttime,
+			String qEndtime);
+
+	Long queryCount(String fid, String addressName, String startNum,
+			String endNum, String position, String hasSingle,
+			String qStarttime, String qEndtime);
 
 	
 }

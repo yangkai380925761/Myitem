@@ -65,6 +65,12 @@ public class NoBill {
 	//取派员
 	@Column(name="staff")
 	private String staff;
+	//分单类型（自动  人工）
+	@Column(name="ordertype")
+	private String ordertype;
+	//关联工单
+	@Column(name="workBills")
+	private String workBills;
 	
 	@Column(name="createTime")
 	private Timestamp createTime;
@@ -195,6 +201,22 @@ public class NoBill {
 
 	public void setStaff(String staff) {
 		this.staff = staff;
+	}
+
+	public String getOrdertype() {
+		return ordertype;
+	}
+
+	public void setOrdertype(String ordertype) {
+		this.ordertype = ordertype;
+	}
+
+	public String getWorkBills() {
+		return workBills;
+	}
+
+	public void setWorkBills(String workBills) {
+		this.workBills = workBills;
 	}
 
 	

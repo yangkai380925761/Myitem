@@ -1,5 +1,6 @@
 package com.tgb.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 
@@ -46,6 +47,29 @@ public class StandardCotroller {
 		map.put("total", total);
 		return map;
 	}
+	/**
+	 * 查询
+	 * @param page
+	 * @param rows
+	 * @return
+	 */
+	@RequestMapping("/queryStandardList")
+	@ResponseBody
+	@Transactional
+	public Map<String, Object> queryStandardList(int page, int rows,String standardName,String minweight,String maxweight,String createBy,String qStarttime,String qEndtime){
+		Map<String, Object> map=new HashMap<String, Object>();
+		try {
+			standardName = new String(standardName.getBytes("iso8859-1"),"utf-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		List<Standard> standardList=standardManager.queryByPage(page,rows,standardName,minweight,maxweight,createBy,qStarttime,qEndtime);
+		Long total=standardManager.queryCount(standardName,minweight,maxweight,createBy,qStarttime,qEndtime);
+		map.put("rows", standardList);
+		map.put("total", total);
+		return map;
+	}
 	
 	@RequestMapping("/ajaxList")
 	@ResponseBody
@@ -76,6 +100,8 @@ public class StandardCotroller {
 		standard.setStandardName(standardName);
 		standard.setMinweight(minweight);
 		standard.setMaxweight(maxweight);
+		standard.setUpdateTime(new Timestamp(new Date().getTime()));
+		standard.setCreateBy((String)session.getAttribute("userNameNum"));
 		standard.setId(id);
 		standardManager.updateStandard(standard);
 		map.put("success", true);

@@ -26,12 +26,18 @@ public class Subarea {
 	//关键字
 	@Column(name="addressName",length=32)
 	private String addressName;
+	//分拣编号
+	@Column(name="fid",length=32)
+	private String fid;
 	//起始号
 	@Column(name="startNum", length=50)
 	private String startNum;
 	//结束号
 	@Column(name="endNum",length=20)
 	private String  endNum;
+	
+	
+	
 	//是否分单双号
 	@Column(name="hasSingle")
 	private String hasSingle;
@@ -111,6 +117,23 @@ public class Subarea {
 	public void setRegion(String region) {
 		this.region = region;
 	}
+
+	public String getFid() {
+		return fid;
+	}
+
+	public void setFid(String fid) {
+		this.fid = fid;
+	}
+
+	
+
+	
+
+	
+	
+
+	
 
 	
 	

@@ -181,7 +181,7 @@ public class UserController {
 	@RequestMapping("/add")
 	@ResponseBody
 	@Transactional
-	public String add( String userName, String password,String email,String phone,String userTrueName,String userType,HttpSession session){
+	public String add( String userName, String password,String email,String phone,String userTrueName,String userType,String quanxianMenu,String quanxianNum,HttpSession session){
 		Map<String, Object> map=new HashMap<String, Object>();
 		User user=new User();
 		user.setUserName(userName);
@@ -190,6 +190,8 @@ public class UserController {
 		user.setEmail(email);
 		user.setUserType(userType);
 		user.setPhone(phone);
+		user.setQuanxianMenu(quanxianMenu);
+		user.setQuanxianNum(quanxianNum);
 		user.setCreateTime(new Timestamp(new Date().getTime()));
 		userManager.addUser(user);
 		map.put("success", true);
@@ -209,7 +211,7 @@ public class UserController {
 	@RequestMapping("/update")
 	@ResponseBody
 	@Transactional
-	public String update( String userName, String email,String phone,String userTrueName,String userType,String id,HttpSession session){
+	public String update( String userName, String email,String phone,String userTrueName,String userType,String id,String quanxianMenu,String quanxianNum,HttpSession session){
 		Map<String, Object> map=new HashMap<String, Object>();
 		User user=new User();
 		user.setUserName(userName);
@@ -217,6 +219,8 @@ public class UserController {
 		user.setEmail(email);
 		user.setUserType(userType);
 		user.setPhone(phone);
+		user.setQuanxianMenu(quanxianMenu);
+		user.setQuanxianNum(quanxianNum);
 		user.setId(id);
 		userManager.updateUser(user);
 		map.put("success", true);
@@ -282,10 +286,19 @@ public class UserController {
 	//-----------------------------暂时不用的方法----------------------------
 	@RequestMapping("/getAllUser")
 	public String getAllUser(HttpServletRequest request){
-		
 		request.setAttribute("userList", userManager.getAllUser());
 		
 		return "/index";
+	}
+	
+	@RequestMapping("/getall")
+	@ResponseBody
+	@Transactional
+	public Map<String, Object> getall(){
+		Map<String, Object> map=new HashMap<String, Object>();
+		List<User> userList=userManager.getAllUser();
+		map.put("userList", userList);
+		return map;
 	}
 	
 	@RequestMapping("/getUser")

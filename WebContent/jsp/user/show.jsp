@@ -74,11 +74,28 @@ var url;
 		 });
 	}
 	function editBean(row){
+		//var rows = $('#dg').datagrid('getChecked');
 	    if (row){
 	        $("#fitemPassword").hide();
 	        row.password2=row.password="******";
-	        $('#dlg').dialog('open').dialog('setTitle','');
+	        
 	        $('#fm').form('load',row);
+	        $("#hasMenu tr").remove();
+	        //加载原来的权限
+	        var oldqxMenu = row.quanxianMenu;
+	        var oldqxNum = row.quanxianNum;
+	        if(oldqxMenu!=""&&oldqxNum!=""){
+	    	    var splOldMenu = oldqxMenu.split(",");
+	    	    var splOldNum = oldqxNum.split(",");
+	    	    for(var i=0; i<splOldMenu.length; i++){
+	    	    	var oneCh = splOldMenu[i].split("_");
+	    	   		var liList = '<tr style="height:25px;"><td>'+oneCh[0]+'</td><td>'+oneCh[1]+'</td><td><img src="<%=basePath%>images/jianImg.png" onclick="deleteThis(this)" style="width:15px; cursor:pointer;"/><span class="numMenu" style="display:none;">'+splOldNum[i]+'</span></td></tr>';
+	    			$("#hasMenu").append(liList);
+	    	    }
+	        }
+	        
+	        $('#dlg').dialog('open').dialog('setTitle','');
+	        //$('#fm').form('load',row);
 	        url = '<%=basePath%>user/update.action';    
 	        $('#ftitle').html("修改用户信息");
 	    }
@@ -287,6 +304,19 @@ var url;
 		});
 			    
 	});
+	//实现增删改查的权限
+	
+	
+	var i=0;
+	function setqx(){
+		//$("#hasMenu tr").remove();
+		
+		$('#setquanxian').dialog('open').dialog('setTitle','设置菜单权限');
+		if(i==0){
+			loadData();
+			i=1;
+		}
+	}
 	
 	$(function(){
 		$("#oldPass").change(function(){
@@ -326,6 +356,148 @@ var url;
 		});
 		
 	});
+	
+	
+	//-------------------用户权限--------------------
+	
+	function addEentry(){
+	var bossMenu = $("#menuBoss").val();
+	var chendMenu = $("#menuChildren").val(); //getValue
+	if(bossMenu=="==选择菜单模块=="){
+		alert("菜单模块选择错误");
+		return false;
+	}
+	var lenNumMenu = $(".numMenu").length;
+	var resNumM = "";
+	for(var i=0; i<lenNumMenu; i++){
+		var num = $(".numMenu:eq("+i+")").text();
+		resNumM += num+",";
+	}
+	var newResNumM = resNumM.substring(0,resNumM.length-1);
+	var oneResNumM = newResNumM.split(",");
+	for(var i=0; i<oneResNumM.length; i++){
+		if(oneResNumM[i]==bossMenu+"-"+chendMenu||oneResNumM[i]==bossMenu+"-0"){
+			alert("重复了");
+			return false;
+		}
+		if(bossMenu+"-"+chendMenu==bossMenu+"-0"){
+			var pp = "";
+			if(oneResNumM[i].length==4){
+				pp = oneResNumM[i].substring(0,2);
+			}else{
+				pp = oneResNumM[i].substring(0,1);
+			}
+			if(bossMenu==pp){
+				alert("重复了");
+				return false;
+			}
+		}
+	}
+	if(bossMenu+"-"+chendMenu=="10-6"){
+		if(utype=="LUSER"){
+			alert("这个功能不支持分配给业务员");
+			return false;
+		}
+	}
+	var getBossMenu = $("#menuBoss").find("option:selected").text();
+	var getChendMenu = $("#menuChildren").find("option:selected").text(); //getValue
+	var liList = '<tr style="height:25px;"><td>'+getBossMenu+'</td><td>'+getChendMenu+'</td><td><img src="<%=basePath%>images/jianImg.png" onclick="deleteThis(this)" style="width:15px; cursor:pointer;"/><span class="numMenu" style="display:none;">'+bossMenu+'-'+chendMenu+'</span></td></tr>';
+	$("#hasMenu").append(liList);
+}
+	
+function deleteThis(inc){
+		$(inc).parents("tr").remove();
+}
+
+function changeChidren(inc){
+	//alert(inc.value);
+	var n=inc.value;
+	if(n==1||n=="1"){
+		$("#menuChildren").append('<option value="1">全部</option><option value="2">增加</option><option value="3">删除</option><option value="4">修改</option><option value="5">查看</option><option value="6">只显示数据</option>');
+	}else if(n==2||n=="2"){
+		//$("#menuChildren").find("option").remove();
+		$("#menuChildren").empty();
+		$("#menuChildren").append('<option value="1">全部</option><option value="2">增加</option><option value="3">删除</option><option value="4">修改</option><option value="5">查看</option><option value="6">只显示数据</option>');
+	}else if(n==3||n=="3"){
+		$("#menuChildren").empty();
+		$("#menuChildren").append('<option value="1">全部</option><option value="2">增加</option><option value="3">删除</option><option value="4">修改</option><option value="5">查看</option><option value="6">批量导入</option><option value="7">只显示数据</option>');
+	}else if(n==4||n=="4"){
+		$("#menuChildren").empty();
+		$("#menuChildren").append('<option value="1">全部</option><option value="2">增加</option><option value="3">删除</option><option value="4">修改</option><option value="5">查看</option><option value="6">导入</option><option value="7">导出</option><option value="8">只显示数据</option>');
+	}else if(n==5||n=="5"){
+		$("#menuChildren").empty();
+		$("#menuChildren").append('<option value="1">全部</option><option value="2">增加</option><option value="3">删除</option><option value="4">修改</option><option value="5">查看</option><option value="6">关联客户</option><option value="7">只显示数据</option>');
+	}else if(n==6||n=="6"){
+		$("#menuChildren").empty();
+		$("#menuChildren").append('<option value="1">全部</option>');
+	}else if(n==7||n=="7"){
+		$("#menuChildren").empty();
+		$("#menuChildren").append('<option value="1">全部</option>');
+	}else if(n==8||n=="8"){
+		$("#menuChildren").empty();
+		$("#menuChildren").append('<option value="1">全部</option><option value="2">模板下载</option><option value="3">批量导入</option>');
+	}else if(n==9||n=="9"){
+		
+	}else if(n==10||n=="10"){
+		$("#menuChildren").empty();
+		$("#menuChildren").append('<option value="1">全部</option>');
+	}else if(n==11||n=="11"){
+		$("#menuChildren").empty();
+		$("#menuChildren").append('<option value="1">全部</option>');
+	}else if(n==11||n=="12"){
+		$("#menuChildren").empty();
+		$("#menuChildren").append('<option value="1">全部</option>');
+	}else if(n==11||n=="13"){
+		$("#menuChildren").empty();
+		$("#menuChildren").append('<option value="1">全部</option>');
+	}else if(n==11||n=="14"){
+		$("#menuChildren").empty();
+		$("#menuChildren").append('<option value="1">全部</option>');
+	}
+}
+
+function loadData() {
+	
+	$.ajax({
+		url : '${pageContext.request.contextPath}/json/menu.json',
+		dataType : 'text',
+		success : function(data) {
+			var zNodes = eval("(" + data + ")");
+	    	for(var i=0;i<zNodes.length;i++){
+	    		if(zNodes[i].name=="基础数据"||zNodes[i].name=="受理"||zNodes[i].name=="调度"||zNodes[i].name=="中转配送流程管理"){
+	    			continue;
+	    		}
+	    		console.log(zNodes[i]);
+	    		$("#menuBoss").append('<option value="'+i+'">'+zNodes[i].name+'</option>');
+	    		
+	    	}
+    	//$('select').comboSelect();
+    }
+    
+   }); 
+  } 
+  //保存选定的权限
+function yesSet(){
+	var len = $("#hasMenu tr").length;
+	var menuValue = "";
+	for(var i=0; i<len; i++){
+		var mokuaiValue = $("#hasMenu tr:eq("+i+") td:eq(0)").text();
+		var funcValue = $("#hasMenu tr:eq("+i+") td:eq(1)").text();
+		menuValue += mokuaiValue+"_"+funcValue+",";
+	}
+	//$("#quanxianMenu").textbox("setValue", menuValue.substring(0,menuValue.length-1));
+	$("#quanxianMenu").val(menuValue.substring(0,menuValue.length-1));
+	
+	var lenNumMenu = $(".numMenu").length;
+	var resNumM = "";
+	for(var i=0; i<lenNumMenu; i++){
+		var num = $(".numMenu:eq("+i+")").text();
+		resNumM += num+",";
+	}
+	$("#quanxianNum").val(resNumM.substring(0,resNumM.length-1));
+	
+	$('#setquanxian').dialog('close');
+}
 </script>
  
 <div id="dg" style="width:50%;height:250px;"></div>
@@ -371,6 +543,13 @@ var url;
 			</div>
 			
 			<div class="fitem">
+				<label>菜单权限：</label>
+				<input id="quanxianMenu" name="quanxianMenu"  readonly/>
+				<input id="setQuan" onclick="setqx()" type="button" value="设置" style="width:50px; height:22px;">
+				<input type="hidden" id="quanxianNum" name="quanxianNum" readonly/>
+			</div>
+			
+			<div class="fitem">
 				<label>手机号码:</label>
 				 <input name="phone" class="easyui-validatebox"
 				 	data-options="validType:['length[0,25]']" />
@@ -396,6 +575,43 @@ var url;
 					<a href="javascript:void(0)" class="easyui-linkbutton"	iconCls="icon-cancel" onclick="javascript:$('#upPass').dialog('close')"	style="width: 90px">取消</a>
 			</div>
 		</div>
+	</div>
+	
+	<div id="setquanxian" class="easyui-dialog" style="width:400px; height:350px; padding:10px 20px" closed="true" buttons="#set-buttons">
+		<div id="menuChexBox">
+			<select  id="menuBoss" name="menuBoss" onchange="changeChidren(this)" style="width:130px; height:25px;">
+					<option>==选择菜单模块==</option>
+					<!-- <option value="1">用户管理</option>
+					<option value="2">订单管理</option>
+					<option value="3">导入导出</option>
+					<option value="4">已分配订单</option>
+					<option value="5">垃圾箱</option>
+					<option value="6">费用配置</option>
+					<option value="7">订单分配</option>
+					<option value="8">客服信息</option>
+					<option value="9">任务分配</option>
+					<option value="10">绩效管理</option>
+					<option value="11">短信记录</option> -->
+			</select>
+			<select  id="menuChildren" name="menuChildren"  style="width:100px; height:25px;">
+					<!-- <option value="0">全部</option>
+					<option value="1">删除</option>
+					<option value="2">修改</option>
+					<option value="3">新增</option>
+					<option value="4">查找</option> -->
+			</select>
+			<a type="button" onclick="addEentry()" iconCls="icon-add" class="easyui-linkbutton" style="width:60px; height:25px;">添加</a>
+			<!-- <input id="addMenu" type="button" value="添加" /> -->
+		</div>
+		<div>
+			<div style="border-bottom:1px solid #cccccc; padding: 20px 0px 5px; color:#666666;"><span>拥有权限</span></div>
+			<table id="hasMenu" border="0" cellpadding="0" cellspacing="0" width="100%"></table>
+		</div>
+	</div>
+	
+	<div id="set-buttons">
+		<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" onclick="yesSet()" style="width: 90px">设置</a>
+		<a href="javascript:void(0)" class="easyui-linkbutton"	iconCls="icon-cancel" onclick="javascript:$('#setquanxian').dialog('close')"	style="width: 90px">取消</a>
 	</div>
 </body>
 

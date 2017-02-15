@@ -71,15 +71,16 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public boolean updateUser(User user) {
 		
-		String hql = "update User u set u.userName = ?,u.userTrueName=?,u.email=?,u.phone=?,u.userType=? where u.id = ?";
+		String hql = "update User u set u.userName = ?,u.userTrueName=?,u.email=?,u.phone=?,u.userType=?,u.quanxianNum=?,u.quanxianMenu=? where u.id = ?";
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
 		query.setString(0, user.getUserName());
 		query.setString(1, user.getUserTrueName());
 		query.setString(2, user.getEmail());
 		query.setString(3, user.getPhone());
 		query.setString(4, user.getUserType());
-		query.setString(5, user.getId());
-		
+		query.setString(5, user.getQuanxianNum());
+		query.setString(6, user.getQuanxianMenu());
+		query.setString(7, user.getId());
 		return (query.executeUpdate() > 0);
 	}
 
@@ -103,6 +104,12 @@ public class UserDaoImpl implements UserDao {
         	 x=new User();
 	            x.setUserName(r.getString("userName"));
 	            x.setPassword(r.getString("password"));
+	            x.setQuanxianMenu(r.getString("quanxianMenu"));
+	            x.setQuanxianNum(r.getString("quanxianNum"));
+	            x.setEmail(r.getString("Email"));
+	            x.setPhone(r.getString("phone"));
+	            x.setUserTrueName(r.getString("userTrueName"));
+	            x.setUserType(r.getString("userType"));
 	            x.setLoginTime(new Timestamp(new Date().getTime()));
             v.add(x);
             i++;
